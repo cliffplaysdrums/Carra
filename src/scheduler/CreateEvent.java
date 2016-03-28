@@ -42,8 +42,6 @@ public class CreateEvent extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDatePickerUtil1 = new org.jdatepicker.util.JDatePickerUtil();
-        jDatePickerUtil2 = new org.jdatepicker.util.JDatePickerUtil();
         jLabel1 = new javax.swing.JLabel();
         txtEventName = new javax.swing.JTextField();
         jdpDateSelector = new org.jdesktop.swingx.JXDatePicker();
@@ -211,7 +209,9 @@ public class CreateEvent extends javax.swing.JFrame {
             i++;
         }
         if (rbnDept.isSelected()) {
-
+            for(int j =0; i < GUI._dept.length; j++){
+                _userModel.setValueAt(GUI._dept[j], j+i, 0);
+            }
         }
     }
 
@@ -251,8 +251,6 @@ public class CreateEvent extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateEvent;
     private static javax.swing.JComboBox<String> cmbPriority;
-    private org.jdatepicker.util.JDatePickerUtil jDatePickerUtil1;
-    private org.jdatepicker.util.JDatePickerUtil jDatePickerUtil2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
