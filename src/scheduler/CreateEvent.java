@@ -180,17 +180,21 @@ public class CreateEvent extends javax.swing.JFrame {
 
         for (int i = 0; i < months.length; i++) {
             if (months[i] == null ? Mon == null : months[i].equals(Mon)) {
-                if (ndate.contains(Mon)) {
+                if (!ndate.contains(Mon)) {
+                } else {
                     ndate = ndate.replace(Mon, String.valueOf(i));
                 }
             }
         }
         ndate += date.substring(date.lastIndexOf(" "));
         ndate = ndate.replaceAll(" ", "/");
-        System.out.println("date is " + ndate);
         // create new event here
         Event newEvent = new Event(eventName, ndate, time, creator);
-
+        if(GUI._upcomingEventsModel.getRowCount() < 6){
+            GUI._upcomingEventsModel.setValueAt(newEvent.getEventName()+" at "+newEvent.getEventTime(), GUI._upcomingEventsModel.getRowCount(), 0);
+        }
+        
+        GUI._upcomingEventsModel.fireTableDataChanged();
         ArrayList<Event> userEvents = GUI._userInfo.get(creator);
         if (userEvents == null) {
             userEvents = new ArrayList<>();
@@ -199,6 +203,7 @@ public class CreateEvent extends javax.swing.JFrame {
         GUI._userInfo.put(creator, userEvents);
         GUI._allEvents.add(newEvent);
         Serialize.save(Serialize.fileLocation);
+        GUI.run();
     }//GEN-LAST:event_btnCreateEventActionPerformed
 
     private void showUsers() {
@@ -213,6 +218,7 @@ public class CreateEvent extends javax.swing.JFrame {
                 _userModel.setValueAt(GUI._dept[j], j+i, 0);
             }
         }
+        _userModel.fireTableDataChanged();
     }
 
     /**
