@@ -42,7 +42,7 @@ public class GUI extends javax.swing.JFrame {
     static int _realYear, _realMonth, _realDay, _currentYear, _currentMonth;
     GregorianCalendar _calendar;
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
-    static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 3);
+    static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
     final int _CALENDAR_HEIGHT = 63;
     static ArrayList<Event> _allEvents = new ArrayList<>();
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
@@ -51,7 +51,7 @@ public class GUI extends javax.swing.JFrame {
     DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     Date _currentDate = new Date();
     static boolean _logged = false;
-    
+
     public GUI() throws IOException {
         this._calendar = new GregorianCalendar();
         _realDay = _calendar.get(GregorianCalendar.DAY_OF_MONTH);
@@ -94,7 +94,11 @@ public class GUI extends javax.swing.JFrame {
         lblMonth = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        tblUpcomingEvents = new javax.swing.JTable();
+        tblUpcomingEvents = new javax.swing.JTable(){
+            public boolean isCellEditable(int row, int column){
+                return false;
+            };
+        };
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -362,28 +366,27 @@ public class GUI extends javax.swing.JFrame {
         Serialize.save(Serialize.fileLocation); // change this to your desktop just for testing
         System.exit(0);
     }//GEN-LAST:event_mnuExitActionPerformed
-    
+
 
     private void mnuAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddUserActionPerformed
         this.setVisible(false);
         AddUsers.run();
 
     }//GEN-LAST:event_mnuAddUserActionPerformed
-    
+
     private void set() {
         tblCalendar.getTableHeader().setResizingAllowed(false);
         tblCalendar.getTableHeader().setReorderingAllowed(false);
         tblCalendar.setColumnSelectionAllowed(true);
         tblCalendar.setRowSelectionAllowed(true);
         tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblCalendar.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        
+
         tblUpcomingEvents.getTableHeader().setResizingAllowed(false);
         tblUpcomingEvents.getTableHeader().setReorderingAllowed(false);
         tblUpcomingEvents.setColumnSelectionAllowed(true);
         tblUpcomingEvents.setRowSelectionAllowed(true);
         tblUpcomingEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         for (int i = _realYear - 100; i <= _realYear + 100; i++) {
             cmbYear.addItem(String.valueOf(i));
         }
@@ -398,12 +401,12 @@ public class GUI extends javax.swing.JFrame {
                             pnlBackground.setBackground(_currentUser.getCustomColor());
                         }
                     } else {
-                        
+
                     }
                 }
             }
         }
-        
+
         String currentDate = _df.format(_currentDate);
         System.err.println(currentDate);
         int j = 0;
@@ -422,6 +425,8 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         }
+
+        refreshCalendar(_currentMonth, _currentYear);
         if (_currentUser != null) { // null check should be removed later
             ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
             if (currentuserEvents != null) {
@@ -432,7 +437,7 @@ public class GUI extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void hideNonAdmin() {
         mnuAddUser.setVisible(false);
         mnuListEditUser.setVisible(false);
@@ -447,7 +452,7 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
 
     }//GEN-LAST:event_btnLogoutActionPerformed
 
@@ -480,11 +485,11 @@ public class GUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_cmbYearActionPerformed
-    
+
     public static void refreshCalendar(int month, int year) {
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
         int numDays, startMonth;
-        
+
         btnPrev.setEnabled(true);
         btnNext.setEnabled(true);
 
@@ -495,7 +500,7 @@ public class GUI extends javax.swing.JFrame {
         if (month == 0 && year <= _realYear - 100) {
             btnPrev.setEnabled(false);
         }
-        
+
         lblMonth.setText(months[month] + " " + _currentYear);
         cmbYear.setSelectedItem(String.valueOf(year));
         for (int i = 0; i < 6; i++) {
@@ -503,22 +508,39 @@ public class GUI extends javax.swing.JFrame {
                 _CalendarTableModel.setValueAt(null, i, j);
             }
         }
-        
+
         GregorianCalendar calendar = new GregorianCalendar(year, month, 1);
         numDays = calendar.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
         startMonth = calendar.get(GregorianCalendar.DAY_OF_WEEK);
-        
+
         for (int i = 1; i <= numDays; i++) {
             int row = (i + startMonth - 2) / 7;
             int column = (i + startMonth - 2) % 7;
+            int mon = month+1;
+            String currentDate = mon+"/"+i+"/"+_currentYear;
             _CalendarTableModel.setValueAt(i, row, column);
-            //tblCalendar.setValueAt(String.valueOf(i)+"\ndata", row, column);
+            if (_currentUser != null) {
+                ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
+                if (currentuserEvents != null) {
+                    String valueatI = String.valueOf(i);
+                    for (int p = 0; p < currentuserEvents.size(); p++) {
+                        Event e = currentuserEvents.get(p);
+                        if(e.getEventDate().equals(currentDate)){
+                            //valueatI = "<html>"+valueatI;
+                            valueatI+=" "+e.getEventName()+" at "+e.getEventTime();
+                            _CalendarTableModel.setValueAt(valueatI, row, column);
+                        }
+                        //System.out.println("event date " + e.getEventDate());
+                    }
+                }
+            }
+            //System.out.println("date is "+month+"/"+i+"/"+_currentYear);
         }
         tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
     }
-    
+
     static class tblCalendarRenderer extends DefaultTableCellRenderer {
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
             super.getTableCellRendererComponent(table, value, selected, focused, row, column);
@@ -528,12 +550,14 @@ public class GUI extends javax.swing.JFrame {
                 setBackground(new Color(255, 255, 255));
             }
             if (value != null) {
-                if (Integer.parseInt(value.toString()) == _realDay && _currentMonth == _realMonth && _currentYear == _realYear) {
+                String val = value.toString();
+                val = val.contains(" ") ? val.substring(0, val.indexOf(" ")) : val;
+                if (Integer.parseInt(val) == _realDay && _currentMonth == _realMonth && _currentYear == _realYear) {
                     //current Day
                     setBackground(new Color(220, 220, 255));
                 }
             }
-            
+
             if (selected) {
                 setBackground(new Color(128, 128, 128));
                 Object dateChosen = _CalendarTableModel.getValueAt(tblCalendar.getSelectedRow(),
@@ -542,7 +566,7 @@ public class GUI extends javax.swing.JFrame {
                 //printing for debug purposes
                 System.out.println("date is " + _currentMonth + "-" + _eventday + "-" + _currentYear);
             }
-            
+
             Color color = Color.black;
             MatteBorder border = new MatteBorder(1, 1, 0, 0, color);
             setBorder(border);
@@ -587,6 +611,7 @@ public class GUI extends javax.swing.JFrame {
         buildDateGUI();
         jScrollPane1.setViewportView(dateGUI);
     }                                        
+                                  
 //GEN-LAST:event_tblCalendarMouseClicked
 
     //build the GUI to be displayed when a particular date in the calendar is clicked
@@ -621,7 +646,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
@@ -651,7 +676,7 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         CreateEvent.run();
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+
     private void print() {
         try {
             tblCalendar.print();
@@ -675,15 +700,11 @@ public class GUI extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the form */
