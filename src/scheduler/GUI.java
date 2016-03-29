@@ -589,8 +589,10 @@ public class GUI extends javax.swing.JFrame {
     }                                        
 //GEN-LAST:event_tblCalendarMouseClicked
 
-    //build the GUI to be displayed when a particular date in the calendar is clicked
-        private void buildDateGUI() {
+    /* builds the GUI to be displayed when a particular date in the calendar is clicked
+     * consists of an upper and lower Jpanel inside the dateGUI JPanel
+     */
+    private void buildDateGUI() {
         dateGUI = new javax.swing.JPanel();
         javax.swing.JPanel upperPanel = new javax.swing.JPanel();
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel();
