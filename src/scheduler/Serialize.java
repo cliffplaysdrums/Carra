@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static scheduler.GUI._userInfo;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -25,7 +24,7 @@ import static scheduler.GUI._userInfo;
  * @author Ayomitunde
  */
 public class Serialize {
-    static String fileLocation = "C:\\Users\\Ayomitunde\\Desktop\\userInfo.ser";
+    static String fileLocation = "userInfo.ser";
     
     static void Open(File file) throws FileNotFoundException, IOException {
         try {

@@ -632,19 +632,11 @@ public class GUI extends javax.swing.JFrame {
         dateGUI.add(upperPanel);
         dateGUI.add(lowerPanel);
         
-        btnBack.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                jScrollPane1.setViewportView(tblCalendar);
-            }
+        btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
+            jScrollPane1.setViewportView(tblCalendar);
         });
        
-        btnCreateEvent.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                jButton1ActionPerformed(e);
-            }
-        });
+        btnCreateEvent.addActionListener(this::jButton1ActionPerformed);
     }
 
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
@@ -652,7 +644,7 @@ public class GUI extends javax.swing.JFrame {
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
         if (_logged == true && !"".equals(newPassword)) {
             _currentUser.setPassword(newPassword);
-            // _userInfo.put(_currentUser, _currentUser.isAdmin());
+            _userInfo.put(_currentUser, _userInfo.get(_currentUser));
             Serialize.save(Serialize.fileLocation);
         }
     }//GEN-LAST:event_mnuEditPasswordActionPerformed
