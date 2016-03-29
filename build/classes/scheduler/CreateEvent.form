@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
+<<<<<<< HEAD
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="3"/>
+  </Properties>
+=======
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="org.jdatepicker.util.JDatePickerUtil" name="jDatePickerUtil1">
@@ -7,6 +13,7 @@
     <Component class="org.jdatepicker.util.JDatePickerUtil" name="jDatePickerUtil2">
     </Component>
   </NonVisualComponents>
+>>>>>>> 5233b498c14c36d261218270357bab874a99c2a9
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>

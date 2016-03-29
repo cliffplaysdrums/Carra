@@ -44,8 +44,8 @@ public class GUI extends javax.swing.JFrame {
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
     static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
     final int _CALENDAR_HEIGHT = 63;
-    static HashMap<User, ArrayList<Event>> _userInfo = new HashMap<>();
     static ArrayList<Event> _allEvents = new ArrayList<>();
+    static HashMap<User, ArrayList> _userInfo = new HashMap<>();
     static String _eventday;
     static User _currentUser;
     DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
@@ -425,7 +425,17 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         }
+
         refreshCalendar(_currentMonth, _currentYear);
+        if (_currentUser != null) { // null check should be removed later
+            ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
+            if (currentuserEvents != null) {
+                for (int i = 0; i < currentuserEvents.size(); i++) {
+                    Event e = currentuserEvents.get(i);
+                    System.out.println("event date is " + e.getEventDate());
+                }
+            }
+        }
     }
 
     private void hideNonAdmin() {
@@ -526,7 +536,6 @@ public class GUI extends javax.swing.JFrame {
             }
             //System.out.println("date is "+month+"/"+i+"/"+_currentYear);
         }
-
         tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
     }
 
@@ -599,18 +608,42 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbYearMouseClicked
 
     private void tblCalendarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendarMouseClicked
-
         buildDateGUI();
         jScrollPane1.setViewportView(dateGUI);
-    }//GEN-LAST:event_tblCalendarMouseClicked
+    }                                        
+                                  
+//GEN-LAST:event_tblCalendarMouseClicked
 
-    private void buildDateGUI() {
+    //build the GUI to be displayed when a particular date in the calendar is clicked
+        private void buildDateGUI() {
         dateGUI = new javax.swing.JPanel();
+        javax.swing.JPanel upperPanel = new javax.swing.JPanel();
+        javax.swing.JPanel lowerPanel = new javax.swing.JPanel();
+        java.awt.GridLayout layout = new java.awt.GridLayout(0, 2);
+        lowerPanel.setLayout(layout);
+        
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
-        dateGUI.add(btnBack);
-
-        btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
-            jScrollPane1.setViewportView(tblCalendar);
+        javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
+        
+        upperPanel.add(btnBack);
+        upperPanel.add(btnCreateEvent);
+        lowerPanel.add(new javax.swing.JLabel("Time"));
+        lowerPanel.add(new javax.swing.JLabel("Events"));
+        dateGUI.add(upperPanel);
+        dateGUI.add(lowerPanel);
+        
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                jScrollPane1.setViewportView(tblCalendar);
+            }
+        });
+       
+        btnCreateEvent.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                jButton1ActionPerformed(e);
+            }
         });
     }
 

@@ -255,6 +255,7 @@ public class CreateEvent extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton btnCreateEvent;
     private static javax.swing.JComboBox<String> cmbPriority;
     private javax.swing.JLabel jLabel1;
