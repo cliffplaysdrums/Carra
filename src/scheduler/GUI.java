@@ -31,6 +31,12 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
+    
+    private final java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
+    private final java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
+    private final java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
+    private final java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
+    private final java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
 
     /**
      * Creates new form GUI
@@ -626,6 +632,15 @@ public class GUI extends javax.swing.JFrame {
         
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
+        
+        dateGUI.setBackground(BACKGROUND_COLOR);
+        dateGUI.setForeground(FOREGROUND_COLOR);
+        btnBack.setBackground(BTN_BACKGROUND_COLOR);
+        btnBack.setForeground(BTN_FOREGROUND_COLOR);
+        btnBack.setFont(BTN_FONT);
+        btnCreateEvent.setBackground(BTN_BACKGROUND_COLOR);
+        btnCreateEvent.setFont(BTN_FONT);
+        btnCreateEvent.setForeground(BTN_FOREGROUND_COLOR);
         
         upperPanel.add(btnBack);
         upperPanel.add(btnCreateEvent);
