@@ -29,6 +29,7 @@ public class Logon extends javax.swing.JFrame {
 
     public Logon() throws IOException {
         initComponents();
+        this.getRootPane().setDefaultButton(btnLogin);
         _testLog = new File(Serialize.fileLocation);
         Serialize.Open(_testLog);
     }

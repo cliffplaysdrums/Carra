@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JColorChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -84,7 +85,7 @@ public class GUI extends javax.swing.JFrame {
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jPanel1 = new javax.swing.JPanel();
         pnlBackground = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnUCreateEvent = new javax.swing.JButton();
         btnLogout = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblCalendar = new javax.swing.JTable(){
@@ -126,19 +127,20 @@ public class GUI extends javax.swing.JFrame {
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         pnlBackground.setBackground(new java.awt.Color(204, 255, 204));
         pnlBackground.setForeground(new java.awt.Color(51, 51, 51));
 
-        jButton1.setBackground(new java.awt.Color(102, 204, 255));
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Create Event");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnUCreateEvent.setBackground(new java.awt.Color(102, 204, 255));
+        btnUCreateEvent.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnUCreateEvent.setForeground(new java.awt.Color(255, 255, 255));
+        btnUCreateEvent.setText("Create Event");
+        btnUCreateEvent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnUCreateEventActionPerformed(evt);
             }
         });
 
@@ -202,12 +204,12 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
                         .addComponent(btnPrev)
                         .addGap(417, 417, 417)
-                        .addComponent(lblMonth, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                        .addComponent(lblMonth, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
                         .addGap(403, 403, 403)
                         .addComponent(btnNext))
                     .addComponent(jScrollPane1)
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnUCreateEvent)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnLogout))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
@@ -221,7 +223,7 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnLogout)
-                    .addComponent(jButton1))
+                    .addComponent(btnUCreateEvent))
                 .addGap(18, 18, 18)
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -235,7 +237,7 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(7, 7, 7))
         );
 
-        jPanel1.add(pnlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(168, 0, 1050, 600));
+        jPanel1.add(pnlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(168, 0, 1020, 600));
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 255));
 
@@ -352,7 +354,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1186, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -644,9 +646,9 @@ public class GUI extends javax.swing.JFrame {
         btnBack.setBackground(BTN_BACKGROUND_COLOR);
         btnBack.setForeground(BTN_FOREGROUND_COLOR);
         btnBack.setFont(BTN_FONT);
-        btnCreateEvent.setBackground(BTN_BACKGROUND_COLOR);
-        btnCreateEvent.setFont(BTN_FONT);
-        btnCreateEvent.setForeground(BTN_FOREGROUND_COLOR);
+        btnCreateEvent.setBackground(btnUCreateEvent.getBackground());
+        btnCreateEvent.setFont(btnUCreateEvent.getFont());
+        btnCreateEvent.setForeground(btnUCreateEvent.getForeground());
         
         upperPanel.add(btnBack);
         upperPanel.add(btnCreateEvent);
@@ -659,14 +661,14 @@ public class GUI extends javax.swing.JFrame {
             jScrollPane1.setViewportView(tblCalendar);
         });
        
-        btnCreateEvent.addActionListener(this::jButton1ActionPerformed);
+        btnCreateEvent.addActionListener(this::btnUCreateEventActionPerformed);
     }
 
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
         Encryption encrypt = new Encryption();
-        if (_logged == true && !"".equals(newPassword)) {
+        if (_logged == true && (!"".equals(newPassword) || newPassword != null)) {
             try {
                 _currentUser.setPassword(encrypt.getEncryptedPassword(newPassword,
                         _currentUser.getSalt()));
@@ -675,6 +677,7 @@ public class GUI extends javax.swing.JFrame {
             }
             _userInfo.put(_currentUser, _userInfo.get(_currentUser));
             Serialize.save(Serialize.fileLocation);
+        } else {
         }
     }//GEN-LAST:event_mnuEditPasswordActionPerformed
 
@@ -693,11 +696,11 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mnuCustomizeCalendarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnUCreateEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUCreateEventActionPerformed
         // TODO add your handling code here:
         //this.setVisible(false);
         CreateEvent.run();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnUCreateEventActionPerformed
 
     private void print() {
         try {
@@ -743,8 +746,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnLogout;
     private static javax.swing.JButton btnNext;
     private static javax.swing.JButton btnPrev;
+    private javax.swing.JButton btnUCreateEvent;
     private static javax.swing.JComboBox<String> cmbYear;
-    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
