@@ -154,9 +154,7 @@ public class Logon extends javax.swing.JFrame {
                             Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                } catch (NoSuchAlgorithmException ex) {
-                    Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InvalidKeySpecException ex) {
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
                     Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
