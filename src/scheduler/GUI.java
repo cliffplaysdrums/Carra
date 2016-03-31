@@ -523,22 +523,28 @@ public class GUI extends javax.swing.JFrame {
             int column = (i + startMonth - 2) % 7;
             int mon = month+1;
             String currentDate = mon+"/"+i+"/"+_currentYear;
-            _CalendarTableModel.setValueAt(i, row, column);
+            String valueatI = "<html><b>"+String.valueOf(i)+"</b></html>";
+            boolean eventExist = false;
+            //_CalendarTableModel.setValueAt(i, row, column);
             if (_currentUser != null) {
                 ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
                 if (currentuserEvents != null) {
-                    String valueatI = String.valueOf(i);
+                    //valueatI = "<html><b>"+String.valueOf(i)+"</b>";
                     for (int p = 0; p < currentuserEvents.size(); p++) {
                         Event e = currentuserEvents.get(p);
                         if(e.getEventDate().equals(currentDate)){
-                            //valueatI = "<html>"+valueatI;
-                            valueatI+=" "+e.getEventName()+" at "+e.getEventTime();
-                            _CalendarTableModel.setValueAt(valueatI, row, column);
+                            eventExist = true;
+                            valueatI += "<br>"+e.getEventName()+" at "+e.getEventTime();
                         }
                         //System.out.println("event date " + e.getEventDate());
                     }
                 }
             }
+            valueatI += "</html>";
+            if(eventExist == true){
+                valueatI = valueatI.replaceFirst("</html>", "");
+            }
+            _CalendarTableModel.setValueAt(valueatI, row, column);
             //System.out.println("date is "+month+"/"+i+"/"+_currentYear);
         }
         tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
@@ -556,7 +562,8 @@ public class GUI extends javax.swing.JFrame {
             }
             if (value != null) {
                 String val = value.toString();
-                val = val.contains(" ") ? val.substring(0, val.indexOf(" ")) : val;
+                val = val.substring(val.indexOf("<b>")+3, val.indexOf("</b>"));
+                //val = val.contains(" ") ? val.substring(0, val.indexOf(" ")) : val;
                 if (Integer.parseInt(val) == _realDay && _currentMonth == _realMonth && _currentYear == _realYear) {
                     //current Day
                     setBackground(new Color(220, 220, 255));
@@ -567,9 +574,9 @@ public class GUI extends javax.swing.JFrame {
                 setBackground(new Color(128, 128, 128));
                 Object dateChosen = _CalendarTableModel.getValueAt(tblCalendar.getSelectedRow(),
                         tblCalendar.getSelectedColumn());
-                _eventday = String.valueOf(dateChosen);
+                //_eventday = String.valueOf(dateChosen);
                 //printing for debug purposes
-                System.out.println("date is " + _currentMonth + "-" + _eventday + "-" + _currentYear);
+                //System.out.println("date is " + _currentMonth + "-" + _eventday + "-" + _currentYear);
             }
 
             Color color = Color.black;
@@ -663,9 +670,7 @@ public class GUI extends javax.swing.JFrame {
             try {
                 _currentUser.setPassword(encrypt.getEncryptedPassword(newPassword,
                         _currentUser.getSalt()));
-            } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvalidKeySpecException ex) {
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             _userInfo.put(_currentUser, _userInfo.get(_currentUser));
@@ -690,6 +695,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        //this.setVisible(false);
         CreateEvent.run();
     }//GEN-LAST:event_jButton1ActionPerformed
 
