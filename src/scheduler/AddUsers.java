@@ -165,10 +165,20 @@ public class AddUsers extends javax.swing.JFrame {
         String email = txtEmail.getText();
         String password = txtPassword.getText();
         String confPassword = txtPasswordCon.getText();
+        byte[] encryptedPassword = null;
+        byte[] salt = null;
+        
         if (!password.equals(confPassword)) {
             JOptionPane.showMessageDialog(null, "Password did not match", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
         } else {
-            User newUser = new User(username, password, email);
+            Encryption encrypt = new Encryption();
+            try {
+                salt = encrypt.generateSalt();
+                encryptedPassword = encrypt.getEncryptedPassword(password, salt);
+            } catch (java.security.NoSuchAlgorithmException | java.security.spec.InvalidKeySpecException e) {
+                //TODO add error message here
+            }
+            User newUser = new User(username, encryptedPassword, salt, email);
             GUI._userInfo.put(newUser, null); //newUser.isAdmin());
             Serialize.save(Serialize.fileLocation);
             JOptionPane.showMessageDialog(null, "User "+newUser.getUsername()+ " Added");

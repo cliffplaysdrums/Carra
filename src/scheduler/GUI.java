@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.print.PrinterException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,11 +34,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class GUI extends javax.swing.JFrame {
     
-    private final java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
-    private final java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
-    private final java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
-    private final java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
-    private final java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
+    private java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
+    private java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
+    private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
+    private java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
+    private java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
 
     /**
      * Creates new form GUI
@@ -656,8 +658,16 @@ public class GUI extends javax.swing.JFrame {
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
+        Encryption encrypt = new Encryption();
         if (_logged == true && !"".equals(newPassword)) {
-            _currentUser.setPassword(newPassword);
+            try {
+                _currentUser.setPassword(encrypt.getEncryptedPassword(newPassword,
+                        _currentUser.getSalt()));
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeySpecException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
             _userInfo.put(_currentUser, _userInfo.get(_currentUser));
             Serialize.save(Serialize.fileLocation);
         }
