@@ -203,7 +203,7 @@ public class CreateEvent extends javax.swing.JFrame {
         GUI._userInfo.put(creator, userEvents);
         GUI._allEvents.add(newEvent);
         Serialize.save(Serialize.fileLocation);
-        GUI.run();
+        GUI.refreshCalendar(GUI._realMonth, GUI._realYear);
     }//GEN-LAST:event_btnCreateEventActionPerformed
 
     private void showUsers() {

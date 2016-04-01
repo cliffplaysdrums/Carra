@@ -7,6 +7,8 @@ package scheduler;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +29,7 @@ public class Logon extends javax.swing.JFrame {
 
     public Logon() throws IOException {
         initComponents();
+        this.getRootPane().setDefaultButton(btnLogin);
         _testLog = new File(Serialize.fileLocation);
         Serialize.Open(_testLog);
     }
@@ -129,6 +132,7 @@ public class Logon extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
+        Encryption encrypt = new Encryption();
         String username = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
@@ -138,17 +142,21 @@ public class Logon extends javax.swing.JFrame {
         } else {
             for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
                 User user = u.next();
-                if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                    valid = true;
-                    user.setLogged();
-                    JOptionPane.showMessageDialog(null, "Successful");
-                    GUI._logged = true;
-                    try {
-                        this.dispose();
-                        new GUI().setVisible(true);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    if (user.getUsername().equals(username) && encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
+                        valid = true;
+                        user.setLogged();
+                        JOptionPane.showMessageDialog(null, "Successful");
+                        GUI._logged = true;
+                        try {
+                            this.dispose();
+                            new GUI().setVisible(true);
+                        } catch (IOException ex) {
+                            Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+                    Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             if (valid == false) {

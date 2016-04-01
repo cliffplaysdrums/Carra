@@ -14,15 +14,17 @@ import java.io.Serializable;
  */
 public class User implements Serializable{
     private String username;
-    private String password;
+    private byte[] password;
+    private byte[] salt;
     private String email;
     private Color customColor; // this should be moved away from here
     private boolean logged;
     private boolean isAdmin;
     
-    public User(String user, String pass, String email){
+    public User(String user, byte[] pass, byte[] s, String email){
         this.username = user;
         this.password = pass;
+        this.salt = s;
         this.email = email;
         this.isAdmin = false;
     }
@@ -31,8 +33,12 @@ public class User implements Serializable{
         return username;
     }
     
-    public String getPassword(){
+    public byte[] getPassword(){
         return password;
+    }
+    
+    public byte[] getSalt() {
+        return salt;
     }
     
     public String getEmail(){
@@ -58,7 +64,7 @@ public class User implements Serializable{
     public void setEmail(String email){
         this.email = email;
     }
-    public void setPassword(String pass){
+    public void setPassword(byte[] pass){
         this.password = pass;
     }
     
