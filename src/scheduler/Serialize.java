@@ -24,22 +24,42 @@ import java.util.logging.Logger;
  * @author Ayomitunde
  */
 public class Serialize {
-    static String fileLocation = "userInfo.ser";
+    static String _fileLocation = "userInfo.ser";
+    static String _serverFile = "serverFile.ser";
     
-    static void Open(File file) throws FileNotFoundException, IOException {
+    static void OpenUserFiles(File file) throws FileNotFoundException, IOException {
         try {
             try (FileInputStream fis = new FileInputStream(file); ObjectInputStream ois = new ObjectInputStream(fis)) {
                 GUI._userInfo = (HashMap) ois.readObject();
+            }
+        } catch (IOException | ClassNotFoundException ioe) {
+        }
+    }
+    
+    static void OpenServerFiles(File file) throws FileNotFoundException, IOException {
+        try {
+            try (FileInputStream fis = new FileInputStream(file); ObjectInputStream ois = new ObjectInputStream(fis)) {
                 GUI._allEvents = (ArrayList) ois.readObject();
             }
         } catch (IOException | ClassNotFoundException ioe) {
         }
     }
     
-    public static void save(String path) {
+    
+    public static void saveUserFiles(String path) {
         try {
             try (FileOutputStream fileOut = new FileOutputStream(path); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
                 out.writeObject(GUI._userInfo);
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void saveServerFile(String path) {
+        try {
+            try (FileOutputStream fileOut = new FileOutputStream(path); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
                 out.writeObject(GUI._allEvents);
             }
 
