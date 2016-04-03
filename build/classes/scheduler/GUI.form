@@ -171,22 +171,30 @@
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="btnPrev" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="417" max="-2" attributes="0"/>
-                              <Component id="lblMonth" pref="82" max="32767" attributes="0"/>
-                              <EmptySpace min="-2" pref="403" max="-2" attributes="0"/>
-                              <Component id="btnNext" min="-2" max="-2" attributes="0"/>
-                          </Group>
                           <Component id="jScrollPane1" max="32767" attributes="0"/>
-                          <Group type="102" attributes="0">
-                              <Component id="btnUCreateEvent" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
-                              <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
-                          </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="cmbYear" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="btnPrev" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnUCreateEvent" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="361" max="-2" attributes="0"/>
+                                      <Component id="lblMonth" pref="82" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="403" max="-2" attributes="0"/>
+                                      <Component id="btnNext" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="353" max="-2" attributes="0"/>
+                                      <Component id="lblUserName" pref="82" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="389" max="-2" attributes="0"/>
+                                      <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -195,11 +203,14 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="btnLogout" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnUCreateEvent" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="btnLogout" max="32767" attributes="0"/>
+                              <Component id="btnUCreateEvent" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="lblUserName" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -320,6 +331,14 @@
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
               </AuxValues>
             </Component>
+            <Component class="javax.swing.JLabel" name="lblUserName">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="jLabel1"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+              </AuxValues>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -374,7 +393,7 @@
                   </Properties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;    public boolean isCellEditable(int row, int column){&#xa;        return false;&#xa;    };&#xa;}"/>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
                   </AuxValues>
                 </Component>
               </SubComponents>
