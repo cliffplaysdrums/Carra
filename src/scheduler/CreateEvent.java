@@ -213,12 +213,6 @@ public class CreateEvent extends javax.swing.JFrame {
             Object user = tblUserTable.getValueAt(selectedRows[i], 0);
             newEvent.addAttendee(String.valueOf(user));
         }
-        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
-            User user = u.next();
-            if(newEvent.getAttendees().contains(user.getUsername())){
-                GUI._userInfo.get(user).add(newEvent);
-            }
-        }
     }
 
     private void showUsers() {

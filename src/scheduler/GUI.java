@@ -64,8 +64,8 @@ public class GUI extends javax.swing.JFrame {
     static Date _currentDate = new Date();
     static boolean _logged = false;
     private final ActionListener updateCalendar;
-    
-    static int counter =0;
+
+    static int counter = 0;
 
     public GUI() throws IOException {
         this._calendar = new GregorianCalendar();
@@ -76,7 +76,8 @@ public class GUI extends javax.swing.JFrame {
         _currentYear = _realYear;
         initComponents();
         set();
-        updateCalendar = (ActionEvent e) ->{
+        updateCalendar = (ActionEvent e) -> {
+            if(_logged) // this should be removed too
             updateCalendar();
         };
         Timer checkUpdt = new Timer(5000, updateCalendar);
@@ -112,7 +113,6 @@ public class GUI extends javax.swing.JFrame {
         btnNext = new javax.swing.JButton();
         btnPrev = new javax.swing.JButton();
         lblMonth = new javax.swing.JLabel();
-        lblUpdatingEvent = new javax.swing.JLabel();
         lblUserName = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -207,8 +207,6 @@ public class GUI extends javax.swing.JFrame {
 
         lblMonth.setText("jLabel1");
 
-        lblUpdatingEvent.setText("Updating Events ...");
-
         lblUserName.setText("jLabel1");
 
         javax.swing.GroupLayout pnlBackgroundLayout = new javax.swing.GroupLayout(pnlBackground);
@@ -220,8 +218,6 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
-                        .addGap(407, 407, 407)
-                        .addComponent(lblUpdatingEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
@@ -259,9 +255,7 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblUpdatingEvent))
+                .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(7, 7, 7))
         );
 
@@ -411,7 +405,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void set() {
         // set table properties here
-        
+
         tblCalendar.getTableHeader().setResizingAllowed(false);
         tblCalendar.getTableHeader().setReorderingAllowed(false);
         tblCalendar.setColumnSelectionAllowed(true);
@@ -434,7 +428,8 @@ public class GUI extends javax.swing.JFrame {
         if (_logged) {
             for (Iterator<User> u = _userInfo.keySet().iterator(); u.hasNext();) {
                 _currentUser = u.next();
-                if (_currentUser.getLogged()) {
+                if (_currentUser.getLogged() && _currentUser.getUsername().equals(Logon._Loginusername)) {
+                    lblUserName.setText("User " + _currentUser.getUsername());
                     if (_currentUser.isAdmin() == false) {
                         hideNonAdmin();
                         if (_currentUser.getCustomColor() != null) {
@@ -463,7 +458,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     //Go through all events for current user, if date is today, update table to show them
-    public static void updateUpcoming(String currentDate){
+    public static void updateUpcoming(String currentDate) {
         int j = 0;
         if (_currentUser != null) { // null check should be removed later
             ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
@@ -481,6 +476,7 @@ public class GUI extends javax.swing.JFrame {
             }
         }
     }
+
     // hide admin functionalities from normal users
     private void hideNonAdmin() {
         mnuAddUser.setVisible(false);
@@ -488,6 +484,7 @@ public class GUI extends javax.swing.JFrame {
         mnuRemoveUser.setVisible(false);
         mnuServerLocation.setVisible(false);
     }
+
     // logout redirects user to login page
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         // TODO add your handling code here:
@@ -572,7 +569,6 @@ public class GUI extends javax.swing.JFrame {
             boolean eventExist = false;
             //_CalendarTableModel.setValueAt(i, row, column);
             if (_currentUser != null) {
-                lblUserName.setText("User "+_currentUser.getUsername());
                 ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
                 if (currentuserEvents != null) {
                     for (Iterator<Event> it = currentuserEvents.iterator(); it.hasNext();) {
@@ -581,10 +577,9 @@ public class GUI extends javax.swing.JFrame {
                             eventExist = true;
                             valueatI += "<br><em>" + e.getEventName() + " at " + e.getEventTime() + "</em>";
                         }
-                        System.out.println("event "+e.getEventName()+" on " + e.getEventDate());
                     }
                 }
-            }else{
+            } else {
                 System.err.println("No User");
             }
             valueatI += "</html>";
@@ -597,24 +592,35 @@ public class GUI extends javax.swing.JFrame {
         counter++;
     }
 
-    
+    // update Calendar so when new events are added, the calendar gets updated with those events
     private void updateCalendar() {
         File _testLog = new File(Serialize._serverFile);
         try {
             Serialize.OpenServerFiles(_testLog);
-            for(Iterator<Event> it = _allEvents.iterator(); it.hasNext();){
+            ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
+            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
                 Event event = it.next();
-                if(event.getAttendees().contains(_currentUser.getUsername())){
-                    ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
-                    _currUserEvents.add(event);
-                    _userInfo.put(_currentUser, _currUserEvents);
-                    Serialize.saveUserFiles(Serialize._fileLocation);
+                boolean eventExist = false; // assumption is that the event is not here already
+                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
+                    for(Event e : _currUserEvents){
+                        if(e.getEventName().equals(event.getEventName())){
+                            eventExist = true;
+                        }
+                    }
+                    if(eventExist == false){
+                        _currUserEvents.add(event);
+                    } // only add if this is false
                 }
             }
+            _userInfo.put(_currentUser, _currUserEvents);
+            Serialize.saveUserFiles(Serialize._fileLocation);
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         refreshCalendar(_realMonth, _realYear);
+        String currentDate = _df.format(_currentDate);
+        updateUpcoming(currentDate);
+        
         System.out.println("updating ...");
     }
 
@@ -824,7 +830,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private static javax.swing.JLabel lblMonth;
-    private javax.swing.JLabel lblUpdatingEvent;
     private static javax.swing.JLabel lblUserName;
     private javax.swing.JMenuItem mnuAddUser;
     private javax.swing.JMenuItem mnuCustomizeCalendar;
