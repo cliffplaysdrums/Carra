@@ -58,6 +58,7 @@ public class GUI extends javax.swing.JFrame {
     final int _CALENDAR_HEIGHT = 100;
     static ArrayList<Event> _allEvents = new ArrayList<>();
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
+    static HashMap<String, ArrayList<User>> _allDepts = new HashMap<>();
     static String _eventday;
     static User _currentUser;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
