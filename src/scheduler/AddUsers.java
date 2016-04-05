@@ -214,6 +214,7 @@ public class AddUsers extends javax.swing.JFrame {
             if (_userDepartment != null) {
                 newUser = new User(username, encryptedPassword, salt, email);
                 ArrayList<User> departmentUsers = GUI._allDepts.get(_userDepartment);
+                if(departmentUsers == null) departmentUsers = new ArrayList<>();
                 departmentUsers.add(newUser);
                 GUI._allDepts.put(_userDepartment, departmentUsers);
                 if (chkAdmin.isSelected()) {
@@ -221,7 +222,7 @@ public class AddUsers extends javax.swing.JFrame {
                 }
                 GUI._userInfo.put(newUser, new ArrayList<>()); //newUser.isAdmin());
                 Serialize.saveUserFiles(Serialize._fileLocation);
-                JOptionPane.showMessageDialog(null, newUser.getUsername() + "User " + " Added");
+                JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
                 clearText();
             } else {
                 JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);

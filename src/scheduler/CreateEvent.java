@@ -229,7 +229,7 @@ public class CreateEvent extends javax.swing.JFrame {
             String objectSelected = String.valueOf(user);
             if (Arrays.asList(GUI._dept).contains(objectSelected)) {
                 ArrayList<User> departments = GUI._allDepts.get(objectSelected);
-                for(int j = 0; j < departments.size(); j++){
+                for (int j = 0; j < departments.size(); j++) {
                     newEvent.addAttendee(departments.get(i).getUsername());
                 }
             } else {
@@ -257,12 +257,11 @@ public class CreateEvent extends javax.swing.JFrame {
         }
         for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
             User user = u.next();
-            if (GUI._currentUser.getUsername() == null ? user.getUsername() != null : !GUI._currentUser.getUsername().equals(user.getUsername())) {
+            if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
                 _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
                 _rowCounter++;
             }
         }
-        _userModel.fireTableDataChanged();
     }
 
     /**
