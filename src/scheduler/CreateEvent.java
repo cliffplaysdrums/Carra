@@ -6,6 +6,7 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -23,7 +24,9 @@ public class CreateEvent extends javax.swing.JFrame {
 
     public String[] months = new String[]{"null", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     static final String[] users = {"Users"};
-    static DefaultTableModel _userModel = new DefaultTableModel(users, 6);
+    static DefaultTableModel _userModel = new DefaultTableModel(users, 100);
+    Event newEvent;
+    int _rowCounter = 0;
 
     /**
      * Creates new form CreateEvent
@@ -55,7 +58,7 @@ public class CreateEvent extends javax.swing.JFrame {
         cmbPriority = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblUserTable = new javax.swing.JTable();
         rbnDept = new javax.swing.JRadioButton();
 
         jLabel1.setText("Event Title");
@@ -80,10 +83,15 @@ public class CreateEvent extends javax.swing.JFrame {
 
         jLabel5.setText("Participants");
 
-        jTable1.setModel(_userModel);
-        jScrollPane1.setViewportView(jTable1);
+        tblUserTable.setModel(_userModel);
+        jScrollPane1.setViewportView(tblUserTable);
 
         rbnDept.setText("Add Department");
+        rbnDept.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbnDeptActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -189,36 +197,71 @@ public class CreateEvent extends javax.swing.JFrame {
         ndate += date.substring(date.lastIndexOf(" "));
         ndate = ndate.replaceAll(" ", "/");
         // create new event here
-        Event newEvent = new Event(eventName, ndate, time, creator);
-        if(GUI._upcomingEventsModel.getRowCount() < 6){
-            GUI._upcomingEventsModel.setValueAt(newEvent.getEventName()+" at "+newEvent.getEventTime(), GUI._upcomingEventsModel.getRowCount(), 0);
+        newEvent = new Event(eventName, ndate, time, creator);
+        if (GUI._upcomingEventsModel.getRowCount() < 6) {
+            GUI._upcomingEventsModel.setValueAt(newEvent.getEventName() + " at " + newEvent.getEventTime(), GUI._upcomingEventsModel.getRowCount(), 0);
         }
-        
-        GUI._upcomingEventsModel.fireTableDataChanged();
+        getSelectedUsers();
         ArrayList<Event> userEvents = GUI._userInfo.get(creator);
-        if (userEvents == null) {
-            userEvents = new ArrayList<>();
-        }
         userEvents.add(newEvent);
         GUI._userInfo.put(creator, userEvents);
         GUI._allEvents.add(newEvent);
-        Serialize.save(Serialize.fileLocation);
+        Serialize.saveUserFiles(Serialize._fileLocation);
+        Serialize.saveServerFile(Serialize._serverFile);
+        String currentDate = GUI._df.format(GUI._currentDate);
+        GUI.updateUpcoming(currentDate);
         GUI.refreshCalendar(GUI._realMonth, GUI._realYear);
+        this.setVisible(false);
     }//GEN-LAST:event_btnCreateEventActionPerformed
 
-    private void showUsers() {
-        int i = 0;
-        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-            User user = u.next();
-            _userModel.setValueAt(user.getUsername(), i, 0);
-            i++;
-        }
-        if (rbnDept.isSelected()) {
-            for(int j =0; i < GUI._dept.length; j++){
-                _userModel.setValueAt(GUI._dept[j], j+i, 0);
+    public boolean deptState() {
+        return rbnDept.isSelected();
+    }
+    private void rbnDeptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbnDeptActionPerformed
+        // TODO add your handling code here:
+        showUsers();
+    }//GEN-LAST:event_rbnDeptActionPerformed
+
+    private void getSelectedUsers() {
+        int[] selectedRows = tblUserTable.getSelectedRows();
+        for (int i = 0; i < selectedRows.length; i++) {
+            Object user = tblUserTable.getValueAt(selectedRows[i], 0);
+            String objectSelected = String.valueOf(user);
+            if (Arrays.asList(GUI._dept).contains(objectSelected)) {
+                ArrayList<User> departments = GUI._allDepts.get(objectSelected);
+                for (int j = 0; j < departments.size(); j++) {
+                    newEvent.addAttendee(departments.get(i).getUsername());
+                }
+            } else {
+                newEvent.addAttendee(String.valueOf(user));
             }
         }
-        _userModel.fireTableDataChanged();
+    }
+
+    private void showDepts() {
+        for (String s : GUI._dept) {
+            _userModel.setValueAt(s, _rowCounter, 0);
+            _rowCounter++;
+        }
+    }
+
+    private void showUsers() {
+        _rowCounter = 0;
+        if (rbnDept.isSelected()) {
+            showDepts();
+        } else {
+            //reset
+            for (int i = 0; i < 50; i++) {
+                _userModel.setValueAt(null, i, 0);
+            }
+        }
+        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
+            User user = u.next();
+            if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
+                _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
+                _rowCounter++;
+            }
+        }
     }
 
     /**
@@ -237,15 +280,11 @@ public class CreateEvent extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CreateEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CreateEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CreateEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(CreateEvent.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the form */
@@ -255,7 +294,6 @@ public class CreateEvent extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton btnCreateEvent;
     private static javax.swing.JComboBox<String> cmbPriority;
     private javax.swing.JLabel jLabel1;
@@ -264,10 +302,10 @@ public class CreateEvent extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTable jTable1;
     private org.jdesktop.swingx.JXDatePicker jdpDateSelector;
     private static javax.swing.JSpinner jspTimeSelector;
     private javax.swing.JRadioButton rbnDept;
+    private static javax.swing.JTable tblUserTable;
     private javax.swing.JTextField txtEventName;
     // End of variables declaration//GEN-END:variables
 }
