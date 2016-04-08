@@ -6,6 +6,7 @@
 package scheduler;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  *
@@ -40,6 +41,7 @@ public class Event implements Serializable{
     private String _eventPriority;
     private User _eventCreator;
     private boolean _rescheduled;
+    private ArrayList<String> _eventAttendees;
     
     public Event(String eventName, String date, String time, User user){
         this._eventName = eventName;
@@ -47,6 +49,7 @@ public class Event implements Serializable{
         this._eventTime = time;
         this._eventCreator = user;
         this._rescheduled = false;
+        _eventAttendees = new ArrayList<>();
     }
     
     public void setDate(String date){
@@ -93,4 +96,13 @@ public class Event implements Serializable{
     public boolean isRescheduled(){
         return this._rescheduled;
     }
+    
+    public void addAttendee(String username){
+        _eventAttendees.add(username);
+    }
+    
+    public ArrayList getAttendees(){
+        return this._eventAttendees;
+    }
+    
 }

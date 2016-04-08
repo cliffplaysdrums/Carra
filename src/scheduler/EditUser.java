@@ -204,7 +204,7 @@ public class EditUser extends javax.swing.JFrame {
         } else {
             _edit.setUsername(nvalue);
         }
-        Serialize.save(Serialize.fileLocation);
+        Serialize.saveUserFiles(Serialize._fileLocation);
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
