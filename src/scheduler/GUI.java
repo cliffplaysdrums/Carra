@@ -37,13 +37,6 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
-
-    private java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
-    private java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
-    private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
-    private java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
-    private java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
-
     /**
      * Creates new form GUI
      */
@@ -51,13 +44,16 @@ public class GUI extends javax.swing.JFrame {
         "Friday", "Saturday"};
     static final String[] _dept = {"Staff", "IT", "Services", "Marketing", "Human Resources", "Financial", "Purchasing", "Sales", "Inventory", "Licenses", "Operational", "Admin"};
     static final String[] _upEvents = {"Upcoming Events"};
+    static final String[] _invitesModel = {"Event Invitations"};
     static int _realYear, _realMonth, _realDay, _currentYear, _currentMonth;
     GregorianCalendar _calendar;
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
     static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
+    static DefaultTableModel _invitationEventModel = new DefaultTableModel(_invitesModel, 100);
     final int _CALENDAR_HEIGHT = 100;
     static ArrayList<Event> _allEvents = new ArrayList<>();
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
+    static HashMap<String, ArrayList> _allDepts = new HashMap<>();
     static String _eventday;
     static User _currentUser;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
@@ -77,8 +73,9 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
         set();
         updateCalendar = (ActionEvent e) -> {
-            if(_logged) // this should be removed too
-            updateCalendar();
+            if(_logged) { // this should be removed too
+                updateCalendar();
+            }            
         };
         Timer checkUpdt = new Timer(5000, updateCalendar);
         checkUpdt.start();
@@ -121,6 +118,8 @@ public class GUI extends javax.swing.JFrame {
                 return false;
             };
         };
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -217,9 +216,7 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbYear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
                         .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnPrev)
@@ -266,19 +263,22 @@ public class GUI extends javax.swing.JFrame {
         tblUpcomingEvents.setModel(_upcomingEventsModel);
         jScrollPane3.setViewportView(tblUpcomingEvents);
 
+        jTable1.setModel(_invitationEventModel);
+        jScrollPane2.setViewportView(jTable1);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 472, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 600));
@@ -592,6 +592,35 @@ public class GUI extends javax.swing.JFrame {
         counter++;
     }
 
+    // this does not work now. similar to updateCalendar, purpose is to replace that since it forces 
+    // events to be added to calendar without any check whatsoever or user accepting.
+    private void showInvites(){
+        //_invitationEventModel
+        int modelrowCount = _invitationEventModel.getRowCount();
+        File _testLog = new File(Serialize._serverFile);
+        try {
+            Serialize.OpenServerFiles(_testLog);
+            ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
+            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
+                Event event = it.next();
+                boolean eventExist = false; // assumption is that the event is not here already
+                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
+                    for(Event e : _currUserEvents){
+                        if(e.getEventName().equals(event.getEventName())){
+                            eventExist = true;
+                        }
+                    }
+                    if(eventExist == false){
+                        _invitationEventModel.setValueAt(event.getEventName(), modelrowCount, 0);
+                        modelrowCount++;
+                    } // only add if this is false
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     // update Calendar so when new events are added, the calendar gets updated with those events
     private void updateCalendar() {
         File _testLog = new File(Serialize._serverFile);
@@ -713,11 +742,11 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
 
-        dateGUI.setBackground(BACKGROUND_COLOR);
-        dateGUI.setForeground(FOREGROUND_COLOR);
-        btnBack.setBackground(BTN_BACKGROUND_COLOR);
-        btnBack.setForeground(BTN_FOREGROUND_COLOR);
-        btnBack.setFont(BTN_FONT);
+        dateGUI.setBackground(pnlBackground.getBackground());
+        dateGUI.setForeground(pnlBackground.getForeground());
+        btnBack.setBackground(btnUCreateEvent.getBackground());
+        btnBack.setForeground(btnUCreateEvent.getForeground());
+        btnBack.setFont(btnUCreateEvent.getFont());
         btnCreateEvent.setBackground(btnUCreateEvent.getBackground());
         btnCreateEvent.setFont(btnUCreateEvent.getFont());
         btnCreateEvent.setForeground(btnUCreateEvent.getForeground());
@@ -828,7 +857,9 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private static javax.swing.JTable jTable1;
     private static javax.swing.JLabel lblMonth;
     private static javax.swing.JLabel lblUserName;
     private javax.swing.JMenuItem mnuAddUser;

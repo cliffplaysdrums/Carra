@@ -6,6 +6,7 @@
 package scheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -23,8 +24,9 @@ public class CreateEvent extends javax.swing.JFrame {
 
     public String[] months = new String[]{"null", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     static final String[] users = {"Users"};
-    static DefaultTableModel _userModel = new DefaultTableModel(users, 6);
+    static DefaultTableModel _userModel = new DefaultTableModel(users, 100);
     Event newEvent;
+    int _rowCounter = 0;
 
     /**
      * Creates new form CreateEvent
@@ -85,6 +87,11 @@ public class CreateEvent extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tblUserTable);
 
         rbnDept.setText("Add Department");
+        rbnDept.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbnDeptActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -207,29 +214,54 @@ public class CreateEvent extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnCreateEventActionPerformed
 
+    public boolean deptState() {
+        return rbnDept.isSelected();
+    }
+    private void rbnDeptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbnDeptActionPerformed
+        // TODO add your handling code here:
+        showUsers();
+    }//GEN-LAST:event_rbnDeptActionPerformed
+
     private void getSelectedUsers() {
         int[] selectedRows = tblUserTable.getSelectedRows();
         for (int i = 0; i < selectedRows.length; i++) {
             Object user = tblUserTable.getValueAt(selectedRows[i], 0);
-            newEvent.addAttendee(String.valueOf(user));
+            String objectSelected = String.valueOf(user);
+            if (Arrays.asList(GUI._dept).contains(objectSelected)) {
+                ArrayList<User> departments = GUI._allDepts.get(objectSelected);
+                for (int j = 0; j < departments.size(); j++) {
+                    newEvent.addAttendee(departments.get(i).getUsername());
+                }
+            } else {
+                newEvent.addAttendee(String.valueOf(user));
+            }
+        }
+    }
+
+    private void showDepts() {
+        for (String s : GUI._dept) {
+            _userModel.setValueAt(s, _rowCounter, 0);
+            _rowCounter++;
         }
     }
 
     private void showUsers() {
-        int i = 0;
+        _rowCounter = 0;
+        if (rbnDept.isSelected()) {
+            showDepts();
+        } else {
+            //reset
+            for (int i = 0; i < 50; i++) {
+                _userModel.setValueAt(null, i, 0);
+            }
+        }
         for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
             User user = u.next();
-            if (GUI._currentUser.getUsername() == null ? user.getUsername() != null : !GUI._currentUser.getUsername().equals(user.getUsername())) {
-                _userModel.setValueAt(user.getUsername(), i, 0);
-                i++;
+            if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
+                _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
+                _rowCounter++;
             }
         }
-        if (rbnDept.isSelected()) {
-            for (int j = 0; i < GUI._dept.length; j++) {
-                _userModel.setValueAt(GUI._dept[j], j + i, 0);
-            }
-        }
-        _userModel.fireTableDataChanged();
     }
 
     /**
