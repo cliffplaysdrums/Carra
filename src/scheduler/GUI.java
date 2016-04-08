@@ -34,6 +34,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class GUI extends javax.swing.JFrame {
     
+    /* Variables for the dateGUI
+     * These only affect the appearance of the "hidden" table that is 
+     *   displayed when you click on a specific date
+     */
     private java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
     private java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
     private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
