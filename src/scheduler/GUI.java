@@ -762,7 +762,8 @@ public class GUI extends javax.swing.JFrame {
         
         //BACK
         c.insets = new java.awt.Insets(2, 2, 4, 4);
-        c.fill = GridBagConstraints.NONE;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
         c.gridx = 0;
         c.gridy = 0;
         upperPanel.add(btnBack, c);
@@ -783,21 +784,23 @@ public class GUI extends javax.swing.JFrame {
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.WEST;
         lowerPanel.add(new javax.swing.JLabel("Time"), c);
         
         //seperator
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
-        //lowerPanel.add(new javax.swing.JSeparator(
-           // javax.swing.SwingConstants.VERTICAL), c);
+        c.anchor = GridBagConstraints.CENTER;
+        lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
         
         //EVENTS
         c.gridx = 2;
         c.gridwidth = 3;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
-        lowerPanel.add(new javax.swing.JLabel("Events"), c);
+        lowerPanel.add(new javax.swing.JLabel("Event"), c);
         
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
