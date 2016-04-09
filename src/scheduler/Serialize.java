@@ -39,6 +39,7 @@ public class Serialize {
     static void OpenServerFiles(File file) throws FileNotFoundException, IOException {
         try {
             try (FileInputStream fis = new FileInputStream(file); ObjectInputStream ois = new ObjectInputStream(fis)) {
+                GUI._userInfo = (HashMap) ois.readObject();
                 GUI._allEvents = (ArrayList) ois.readObject();
             }
         } catch (IOException | ClassNotFoundException ioe) {
@@ -60,6 +61,7 @@ public class Serialize {
     public static void saveServerFile(String path) {
         try {
             try (FileOutputStream fileOut = new FileOutputStream(path); ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+                out.writeObject(GUI._userInfo);
                 out.writeObject(GUI._allEvents);
             }
 

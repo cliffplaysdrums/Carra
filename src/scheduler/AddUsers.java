@@ -57,7 +57,7 @@ public class AddUsers extends javax.swing.JFrame {
         chkAdmin = new javax.swing.JCheckBox();
         lblPassword3 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnCreate.setText("Create");
         btnCreate.addActionListener(new java.awt.event.ActionListener() {

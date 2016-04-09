@@ -26,7 +26,7 @@ public class Logon extends javax.swing.JFrame {
      * @throws java.io.IOException
      */
     File _testLog;
-    static String _Loginusername;
+    static String _loginUsername;
 
     public Logon() throws IOException {
         initComponents();
@@ -157,17 +157,17 @@ public class Logon extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
         Encryption encrypt = new Encryption();
-        _Loginusername = txtUsername.getText();
+        _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
 
-        if ("".equals(_Loginusername) || "".equals(password)) {
+        if ("".equals(_loginUsername) || "".equals(password)) {
             JOptionPane.showMessageDialog(null, "Please Input a Username and Password", "Input Required", JOptionPane.ERROR_MESSAGE);
         } else {
             for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
                 User user = u.next();
                 try {
-                    if (user.getUsername().equals(_Loginusername)) {
+                    if (user.getUsername().equals(_loginUsername)) {
                         if (encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
                             valid = true;
                             user.setLogged();

@@ -37,15 +37,18 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
+
     /**
      * Creates new form GUI
      */
+    // initializatin should happen in the constructor... this should be moved.
     static final String[] _days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
         "Friday", "Saturday"};
     static final String[] _dept = {"Staff", "IT", "Services", "Marketing", "Human Resources", "Financial", "Purchasing", "Sales", "Inventory", "Licenses", "Operational", "Admin"};
     static final String[] _upEvents = {"Upcoming Events"};
     static final String[] _invitesModel = {"Event Invitations"};
     static int _realYear, _realMonth, _realDay, _currentYear, _currentMonth;
+    static int modelrowCount = 0;
     GregorianCalendar _calendar;
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
     static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
@@ -73,9 +76,9 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
         set();
         updateCalendar = (ActionEvent e) -> {
-            if(_logged) { // this should be removed too
+            if (_logged) { // this should be removed too
                 updateCalendar();
-            }            
+            }
         };
         Timer checkUpdt = new Timer(5000, updateCalendar);
         checkUpdt.start();
@@ -428,7 +431,7 @@ public class GUI extends javax.swing.JFrame {
         if (_logged) {
             for (Iterator<User> u = _userInfo.keySet().iterator(); u.hasNext();) {
                 _currentUser = u.next();
-                if (_currentUser.getLogged() && _currentUser.getUsername().equals(Logon._Loginusername)) {
+                if (_currentUser.getLogged() && _currentUser.getUsername().equals(Logon._loginUsername)) {
                     lblUserName.setText("User " + _currentUser.getUsername());
                     if (_currentUser.isAdmin() == false) {
                         hideNonAdmin();
@@ -579,8 +582,6 @@ public class GUI extends javax.swing.JFrame {
                         }
                     }
                 }
-            } else {
-                System.err.println("No User");
             }
             valueatI += "</html>";
             if (eventExist == true) {
@@ -592,35 +593,46 @@ public class GUI extends javax.swing.JFrame {
         counter++;
     }
 
+    private void getModelrowCount() {
+        for (; modelrowCount < _invitationEventModel.getRowCount(); modelrowCount++) {
+            Object value = _invitationEventModel.getValueAt(modelrowCount, 0);
+            if (value != null) {
+                modelrowCount++;
+            }
+        }
+    }
+
     // this does not work now. similar to updateCalendar, purpose is to replace that since it forces 
     // events to be added to calendar without any check whatsoever or user accepting.
-    private void showInvites(){
-        //_invitationEventModel
-        int modelrowCount = _invitationEventModel.getRowCount();
+    private void showInvites() {
+        getModelrowCount();
         File _testLog = new File(Serialize._serverFile);
         try {
             Serialize.OpenServerFiles(_testLog);
             ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
-            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
-                Event event = it.next();
-                boolean eventExist = false; // assumption is that the event is not here already
-                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
-                    for(Event e : _currUserEvents){
-                        if(e.getEventName().equals(event.getEventName())){
-                            eventExist = true;
+            if (_currUserEvents != null) {
+                for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
+                    Event event;
+                    event = it.next();
+                    boolean eventExist = false; // assumption is that the event is not here already
+                    if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
+                        for (Event e : _currUserEvents) {
+                            if (e.getEventName().equals(event.getEventName())) {
+                                eventExist = true;
+                            }
                         }
+                        if (eventExist == false) {
+                            _invitationEventModel.setValueAt(event.getEventName(), modelrowCount, 0);
+                            modelrowCount++;
+                        } // only add if this is false
                     }
-                    if(eventExist == false){
-                        _invitationEventModel.setValueAt(event.getEventName(), modelrowCount, 0);
-                        modelrowCount++;
-                    } // only add if this is false
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // update Calendar so when new events are added, the calendar gets updated with those events
     private void updateCalendar() {
         File _testLog = new File(Serialize._serverFile);
@@ -631,12 +643,12 @@ public class GUI extends javax.swing.JFrame {
                 Event event = it.next();
                 boolean eventExist = false; // assumption is that the event is not here already
                 if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
-                    for(Event e : _currUserEvents){
-                        if(e.getEventName().equals(event.getEventName())){
+                    for (Event e : _currUserEvents) {
+                        if (e.getEventName().equals(event.getEventName())) {
                             eventExist = true;
                         }
                     }
-                    if(eventExist == false){
+                    if (eventExist == false) {
                         _currUserEvents.add(event);
                     } // only add if this is false
                 }
@@ -649,7 +661,7 @@ public class GUI extends javax.swing.JFrame {
         refreshCalendar(_realMonth, _realYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
-        
+
         System.out.println("updating ...");
     }
 

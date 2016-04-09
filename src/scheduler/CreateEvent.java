@@ -229,8 +229,10 @@ public class CreateEvent extends javax.swing.JFrame {
             String objectSelected = String.valueOf(user);
             if (Arrays.asList(GUI._dept).contains(objectSelected)) {
                 ArrayList<User> departments = GUI._allDepts.get(objectSelected);
-                for (int j = 0; j < departments.size(); j++) {
-                    newEvent.addAttendee(departments.get(i).getUsername());
+                if (departments != null) {
+                    for (int j = 0; j < departments.size(); j++) {
+                        newEvent.addAttendee(departments.get(i).getUsername());
+                    }
                 }
             } else {
                 newEvent.addAttendee(String.valueOf(user));

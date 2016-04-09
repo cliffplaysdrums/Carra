@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class User implements Serializable{
     private String username;
     private byte[] password;
-    private byte[] salt;
+    private final byte[] salt;
     private String email;
     private Color customColor; // this should be moved away from here
     private boolean logged;
