@@ -759,27 +759,42 @@ public class GUI extends javax.swing.JFrame {
         btnCreateEvent.setForeground(btnUCreateEvent.getForeground());
 
         //layout
+        
+        //BACK
         c.insets = new java.awt.Insets(2, 2, 4, 4);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.NONE;
         c.gridx = 0;
         c.gridy = 0;
-        c.anchor = GridBagConstraints.NORTHWEST;
         upperPanel.add(btnBack, c);
         
+        //seperator
         c.gridx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        upperPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+        
+        //CREATE EVENT
+        c.gridx = 2;
         c.gridy = 0;
-        c.anchor = GridBagConstraints.NORTH;
+        c.fill = GridBagConstraints.NONE;
         upperPanel.add(btnCreateEvent, c);
         
+        //TIME
         c.gridx = 0;
         c.gridy = 1;
-        c.anchor = GridBagConstraints.NORTHEAST;
         c.fill = GridBagConstraints.NONE;
         lowerPanel.add(new javax.swing.JLabel("Time"), c);
         
+        //seperator
         c.gridx = 1;
-        c.gridy = 1;
+        c.fill = GridBagConstraints.BOTH;
+        //lowerPanel.add(new javax.swing.JSeparator(
+           // javax.swing.SwingConstants.VERTICAL), c);
+        
+        //EVENTS
+        c.gridx = 2;
         c.gridwidth = 3;
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
         lowerPanel.add(new javax.swing.JLabel("Events"), c);
@@ -795,10 +810,14 @@ public class GUI extends javax.swing.JFrame {
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1)), c);
             
+            c.gridx = 1;
+            c.fill = GridBagConstraints.BOTH;
+            lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
             
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 1;
+            c.gridx = 2;
             c.gridwidth = 3;
             c.weightx = 1;
             //TODO: add event description (if it exists)
@@ -811,9 +830,14 @@ public class GUI extends javax.swing.JFrame {
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1) + ":30"), c);
             
+            c.gridx = 1;
+            c.fill = GridBagConstraints.BOTH;
+            lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+            
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 1;
+            c.gridx = 2;
             c.gridwidth = 3;
             c.weightx = 1;
             //TODO: add event description (if it exists)
