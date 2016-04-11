@@ -737,21 +737,23 @@ public class GUI extends javax.swing.JFrame {
      */
     private void buildDateGUI() {
         //load events
-        //month selected = _currentMonth + 1
+        //month selected = _currentMonth
         //year selected = _currentYear
-        GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth + 1, 1);
+        GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth, 1);
         //numDays = calendar.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
-        int day1 = testCalendar.get(GregorianCalendar.DAY_OF_WEEK);
-        int offset = day1 - 1;
+        int offset = testCalendar.get(GregorianCalendar.DAY_OF_WEEK) - 1;
         
         int row = tblCalendar.getSelectedRow();
         int col = tblCalendar.getSelectedColumn();
+        int daySelected = row * 7 + col + 1 - offset;
+        String dateSelected = _currentMonth + "/" + daySelected + "/" + _currentYear;
+        
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
-            //System.out.println(e.getEventDate().toString());
-            //System.out.println(row * 7 + col + 1 - offset);
-            System.out.println(day1);
+            if (e.getEventDate() == dateSelected)
+                System.out.println("Match found");
+            System.out.println(e.getEventDate().toString());
         }
         
         //add some layout components
