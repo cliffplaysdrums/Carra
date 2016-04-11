@@ -7,6 +7,8 @@ package scheduler;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PrinterException;
@@ -657,7 +659,8 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        refreshCalendar(_realMonth, _realYear);
+        //refreshCalendar(_realMonth, _realYear);
+        refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
         
@@ -744,17 +747,35 @@ public class GUI extends javax.swing.JFrame {
      * consists of an upper and lower Jpanel inside the dateGUI JPanel
      */
     private void buildDateGUI() {
-        dateGUI = new javax.swing.JPanel();
-        javax.swing.JPanel upperPanel = new javax.swing.JPanel();
-        javax.swing.JPanel lowerPanel = new javax.swing.JPanel();
-        java.awt.GridLayout layout = new java.awt.GridLayout(0, 2);
-        lowerPanel.setLayout(layout);
+        GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth, 1);
+        int offset = testCalendar.get(GregorianCalendar.DAY_OF_WEEK) - 1;
+        
+        int row = tblCalendar.getSelectedRow();
+        int col = tblCalendar.getSelectedColumn();
+        int daySelected = row * 7 + col + 1 - offset;
+        String dateSelected = (_currentMonth + 1) + "/" + daySelected + "/" + _currentYear;
+        
+        //add some layout components
+        dateGUI = new javax.swing.JPanel(new GridBagLayout());
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
+        java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
+        GridBagConstraints c = new GridBagConstraints();
+        javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
+        javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
+        javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
+        upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
+        scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
 
-        dateGUI.setBackground(pnlBackground.getBackground());
-        dateGUI.setForeground(pnlBackground.getForeground());
+        //coloring
+        dateGUI.setBackground(tblCalendar.getBackground());
+        dateGUI.setForeground(tblCalendar.getForeground());
+        upperPanel.setBackground(tblCalendar.getBackground());
+        upperPanel.setForeground(tblCalendar.getForeground());
+        lowerPanel.setBackground(tblCalendar.getBackground());
+        lowerPanel.setForeground(tblCalendar.getForeground());
         btnBack.setBackground(btnUCreateEvent.getBackground());
         btnBack.setForeground(btnUCreateEvent.getForeground());
         btnBack.setFont(btnUCreateEvent.getFont());
@@ -762,12 +783,114 @@ public class GUI extends javax.swing.JFrame {
         btnCreateEvent.setFont(btnUCreateEvent.getFont());
         btnCreateEvent.setForeground(btnUCreateEvent.getForeground());
 
-        upperPanel.add(btnBack);
-        upperPanel.add(btnCreateEvent);
-        lowerPanel.add(new javax.swing.JLabel("Time"));
-        lowerPanel.add(new javax.swing.JLabel("Events"));
-        dateGUI.add(upperPanel);
-        dateGUI.add(lowerPanel);
+        //layout
+        
+        //BACK
+        c.insets = new java.awt.Insets(2, 2, 4, 4);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.WEST;
+        c.gridx = 0;
+        c.gridy = 0;
+        upperPanel.add(btnBack, c);
+        
+        //seperator
+        c.gridx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        upperPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+        
+        //CREATE EVENT
+        c.gridx = 2;
+        c.gridy = 0;
+        c.fill = GridBagConstraints.NONE;
+        upperPanel.add(btnCreateEvent, c);
+        
+        //TIME
+        c.gridx = 0;
+        c.gridy = 1;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.WEST;
+        lowerPanel.add(new javax.swing.JLabel("Time"), c);
+        
+        //seperator
+        c.gridx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+        
+        //EVENTS
+        c.gridx = 2;
+        c.gridwidth = 3;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1;
+        lowerPanel.add(new javax.swing.JLabel("Event"), c);
+        
+        //fill in times and event descriptions
+        c.anchor = GridBagConstraints.WEST;
+        for (int i = 1; i <= 24; i++) {
+            //time on the hour (1, 2, 3, etc)
+            c.fill = GridBagConstraints.NONE;
+            c.gridx = 0;
+            c.gridy = i * 2;
+            c.gridwidth = 1;
+            c.weightx = 0;
+            lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1)), c);
+            
+            c.gridx = 1;
+            c.fill = GridBagConstraints.BOTH;
+            lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+            
+            //event
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.gridx = 2;
+            c.gridwidth = 3;
+            c.weightx = 1;
+            //TODO: add event description (if it exists)
+            
+            
+            //time every 1/2 hour (1:30, 2:30, etc)
+            c.fill = GridBagConstraints.NONE;
+            c.gridx = 0;
+            c.gridy++;
+            c.weightx = 0;
+            lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1) + ":30"), c);
+            
+            c.gridx = 1;
+            c.fill = GridBagConstraints.BOTH;
+            lowerPanel.add(new javax.swing.JSeparator(
+            javax.swing.SwingConstants.VERTICAL), c);
+        }
+        
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.NONE;
+        c.gridwidth = 3;
+        c.weightx = 1;
+        ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
+        for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
+            Event e = it.next();
+            if (e.getEventDate().equals(dateSelected)) {
+                String[] time = e.getEventTime().split(":");
+                int hour = Integer.parseInt(time[0]);
+                int min = Integer.parseInt(time[1]);
+                
+                c.gridy = (hour + 1) * 2;
+                if (min >= 30) c.gridy++;
+                
+                lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
+            }
+        }
+        
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        dateGUI.add(upperPanel, c);
+        
+        c.gridx = 0;
+        c.gridy = 1;
+        dateGUI.add(scroll, c);
 
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
