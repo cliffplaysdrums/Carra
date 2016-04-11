@@ -746,15 +746,7 @@ public class GUI extends javax.swing.JFrame {
         int row = tblCalendar.getSelectedRow();
         int col = tblCalendar.getSelectedColumn();
         int daySelected = row * 7 + col + 1 - offset;
-        String dateSelected = _currentMonth + "/" + daySelected + "/" + _currentYear;
-        
-        ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
-        for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
-            Event e = it.next();
-            if (e.getEventDate() == dateSelected)
-                System.out.println("Match found");
-            System.out.println(e.getEventDate().toString());
-        }
+        String dateSelected = (_currentMonth + 1) + "/" + daySelected + "/" + _currentYear;
         
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
@@ -858,13 +850,25 @@ public class GUI extends javax.swing.JFrame {
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
             javax.swing.SwingConstants.VERTICAL), c);
-            
-            //event
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 2;
-            c.gridwidth = 3;
-            c.weightx = 1;
-            //TODO: add event description (if it exists)
+        }
+        
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.NONE;
+        c.gridwidth = 3;
+        c.weightx = 1;
+        ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
+        for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
+            Event e = it.next();
+            if (e.getEventDate().equals(dateSelected)) {
+                String[] time = e.getEventTime().split(":");
+                int hour = Integer.parseInt(time[0]);
+                int min = Integer.parseInt(time[1]);
+                
+                c.gridy = (hour + 1) * 2;
+                if (min >= 30) c.gridy++;
+                
+                lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
+            }
         }
         
         c.gridx = 0;
