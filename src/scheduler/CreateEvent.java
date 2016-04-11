@@ -5,11 +5,14 @@
  */
 package scheduler;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JSpinner;
@@ -26,7 +29,7 @@ public class CreateEvent extends javax.swing.JFrame {
     static final String[] users = {"Users"};
     static DefaultTableModel _userModel = new DefaultTableModel(users, 100);
     Event newEvent;
-    int _rowCounter = 0;
+    static int _rowCounter = 0;
 
     /**
      * Creates new form CreateEvent
@@ -201,13 +204,18 @@ public class CreateEvent extends javax.swing.JFrame {
         if (GUI._upcomingEventsModel.getRowCount() < 6) {
             GUI._upcomingEventsModel.setValueAt(newEvent.getEventName() + " at " + newEvent.getEventTime(), GUI._upcomingEventsModel.getRowCount(), 0);
         }
-        getSelectedUsers();
-        ArrayList<Event> userEvents = GUI._userInfo.get(creator);
+        ArrayList<Event> userEvents = GUI._userInfo.get(creator) == null ? new ArrayList<>() : GUI._userInfo.get(creator); // should not be equal null.. check!!
         userEvents.add(newEvent);
         GUI._userInfo.put(creator, userEvents);
-        GUI._allEvents.add(newEvent);
+        try {
+            //GUI._allEvents.add(newEvent);
+            dbModel.createEvent(eventName, ndate, time, "low", false, creator.getUsername());
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        getSelectedUsers();
         Serialize.saveUserFiles(Serialize._fileLocation);
-        Serialize.saveServerFile(Serialize._serverFile);
+        //Serialize.saveServerFile(Serialize._serverFile);
         String currentDate = GUI._df.format(GUI._currentDate);
         GUI.updateUpcoming(currentDate);
         GUI.refreshCalendar(GUI._realMonth, GUI._realYear);
@@ -223,22 +231,46 @@ public class CreateEvent extends javax.swing.JFrame {
     }//GEN-LAST:event_rbnDeptActionPerformed
 
     private void getSelectedUsers() {
-        int[] selectedRows = tblUserTable.getSelectedRows();
-        for (int i = 0; i < selectedRows.length; i++) {
-            Object user = tblUserTable.getValueAt(selectedRows[i], 0);
-            String objectSelected = String.valueOf(user);
-            if (Arrays.asList(GUI._dept).contains(objectSelected)) {
-                ArrayList<User> departments = GUI._allDepts.get(objectSelected);
-                for (int j = 0; j < departments.size(); j++) {
-                    newEvent.addAttendee(departments.get(i).getUsername());
+        try {
+            int[] selectedRows = tblUserTable.getSelectedRows();
+            for (int i = 0; i < selectedRows.length; i++) {
+                Object user = tblUserTable.getValueAt(selectedRows[i], 0);
+                String objectSelected = String.valueOf(user);
+                if (Arrays.asList(GUI._dept).contains(objectSelected)) {
+                    ArrayList<User> departments = GUI._allDepts.get(objectSelected);
+                    if (departments != null) {
+                        for (int j = 0; j < departments.size(); j++) {
+                            newEvent.addAttendee(departments.get(i).getUsername());
+                            try {
+                                int userId = dbModel.findId(departments.get(i).getUsername(), "User");
+                                int eventId = dbModel.findId(newEvent.getEventName(), "Event");
+                                dbModel.insertUserEvent(userId, eventId);
+                            } catch (ClassNotFoundException | SQLException ex) {
+                                Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        String username = String.valueOf(user);
+                        newEvent.addAttendee(username);
+                        int userId = dbModel.findId(username, "User");
+                        int eventId = dbModel.findId(newEvent.getEventName(), "Event");
+                        dbModel.insertUserEvent(userId, eventId);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-            } else {
-                newEvent.addAttendee(String.valueOf(user));
             }
+            int userId = dbModel.findId(GUI._currentUser.getUsername(), "User");
+            int eventId = dbModel.findId(newEvent.getEventName(), "Event");
+            dbModel.insertUserEvent(userId, eventId);
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void showDepts() {
+    public static void showDepts() {
         for (String s : GUI._dept) {
             _userModel.setValueAt(s, _rowCounter, 0);
             _rowCounter++;
@@ -255,12 +287,17 @@ public class CreateEvent extends javax.swing.JFrame {
                 _userModel.setValueAt(null, i, 0);
             }
         }
-        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-            User user = u.next();
-            if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
-                _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
-                _rowCounter++;
-            }
+        try {
+            //for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
+            //User user = u.next();
+            //if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
+            // _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
+            //_rowCounter++;
+            //}
+            //}
+            dbModel.showUsers(GUI._currentUser.getUsername());
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -304,7 +341,7 @@ public class CreateEvent extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private org.jdesktop.swingx.JXDatePicker jdpDateSelector;
     private static javax.swing.JSpinner jspTimeSelector;
-    private javax.swing.JRadioButton rbnDept;
+    public static javax.swing.JRadioButton rbnDept;
     private static javax.swing.JTable tblUserTable;
     private javax.swing.JTextField txtEventName;
     // End of variables declaration//GEN-END:variables

@@ -7,7 +7,10 @@ package scheduler;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -57,7 +60,7 @@ public class AddUsers extends javax.swing.JFrame {
         chkAdmin = new javax.swing.JCheckBox();
         lblPassword3 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         btnCreate.setText("Create");
         btnCreate.addActionListener(new java.awt.event.ActionListener() {
@@ -119,7 +122,7 @@ public class AddUsers extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnCreate))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 124, Short.MAX_VALUE)
                                 .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblUsername1, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -137,7 +140,7 @@ public class AddUsers extends javax.swing.JFrame {
                                 .addComponent(chkAdmin)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(txtPassword)
-                            .addComponent(txtPasswordCon, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                            .addComponent(txtPasswordCon, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
                             .addComponent(cmbDept, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -199,6 +202,12 @@ public class AddUsers extends javax.swing.JFrame {
         byte[] encryptedPassword = null;
         byte[] salt = null;
 
+        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
+            User user = u.next();
+            if(user.getUsername().equals(username)){
+                JOptionPane.showMessageDialog(null, "This Username ("+username+") has been taken", "Username Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         if (!password.equals(confPassword)) {
             JOptionPane.showMessageDialog(null, "Password did not match", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
         } else if (isvalidated == false) {
@@ -222,7 +231,14 @@ public class AddUsers extends javax.swing.JFrame {
                 }
                 GUI._userInfo.put(newUser, new ArrayList<>()); //newUser.isAdmin());
                 Serialize.saveUserFiles(Serialize._fileLocation);
+                try {
+                    dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
+                    dbModel.addUserDept(username, _userDepartment);
+                } catch (SQLException | ClassNotFoundException ex) {
+                    Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
+                repaint();
                 clearText();
             } else {
                 JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);
@@ -231,6 +247,7 @@ public class AddUsers extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCreateActionPerformed
 
+    
     private void clearText() {
         txtUsername.setText("");
         txtPassword.setText("");

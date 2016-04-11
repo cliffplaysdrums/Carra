@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
+<<<<<<< HEAD
     
     /* Variables for the dateGUI
      * These only affect the appearance of the "hidden" table that is 
@@ -49,16 +51,20 @@ public class GUI extends javax.swing.JFrame {
     private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
     private java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
     private java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
+=======
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
 
     /**
      * Creates new form GUI
      */
+    // initializatin should happen in the constructor... this should be moved.
     static final String[] _days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
         "Friday", "Saturday"};
     static final String[] _dept = {"Staff", "IT", "Services", "Marketing", "Human Resources", "Financial", "Purchasing", "Sales", "Inventory", "Licenses", "Operational", "Admin"};
     static final String[] _upEvents = {"Upcoming Events"};
     static final String[] _invitesModel = {"Event Invitations"};
     static int _realYear, _realMonth, _realDay, _currentYear, _currentMonth;
+    static int modelrowCount = 0;
     GregorianCalendar _calendar;
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
     static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
@@ -71,7 +77,6 @@ public class GUI extends javax.swing.JFrame {
     static User _currentUser;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
-    static boolean _logged = false;
     private final ActionListener updateCalendar;
 
     static int counter = 0;
@@ -86,9 +91,9 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
         set();
         updateCalendar = (ActionEvent e) -> {
-            if(_logged) { // this should be removed too
+            if (_currentUser != null) { // this should be removed too
                 updateCalendar();
-            }            
+            }
         };
         Timer checkUpdt = new Timer(5000, updateCalendar);
         checkUpdt.start();
@@ -438,10 +443,10 @@ public class GUI extends javax.swing.JFrame {
 
         // check it a user is logged (logged is set to true from login). If logged is true, then there is at least one user logged on.
         // check if that user is an admin, if yes then show things admin can see but if not hide them.
-        if (_logged) {
+        if (_currentUser == null) {
             for (Iterator<User> u = _userInfo.keySet().iterator(); u.hasNext();) {
                 _currentUser = u.next();
-                if (_currentUser.getLogged() && _currentUser.getUsername().equals(Logon._Loginusername)) {
+                if (_currentUser.getLogged() == true) {
                     lblUserName.setText("User " + _currentUser.getUsername());
                     if (_currentUser.isAdmin() == false) {
                         hideNonAdmin();
@@ -449,6 +454,7 @@ public class GUI extends javax.swing.JFrame {
                             pnlBackground.setBackground(_currentUser.getCustomColor());
                         }
                     }
+                    break;
                 }
             }
         }
@@ -507,8 +513,8 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
+        _currentUser.setLogged(false);
+        _currentUser = null;
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void mnuRemoveUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuRemoveUserActionPerformed
@@ -592,8 +598,6 @@ public class GUI extends javax.swing.JFrame {
                         }
                     }
                 }
-            } else {
-                System.err.println("No User");
             }
             valueatI += "</html>";
             if (eventExist == true) {
@@ -605,66 +609,91 @@ public class GUI extends javax.swing.JFrame {
         counter++;
     }
 
+    private void getModelrowCount() {
+        for (; modelrowCount < _invitationEventModel.getRowCount(); modelrowCount++) {
+            Object value = _invitationEventModel.getValueAt(modelrowCount, 0);
+            if (value != null) {
+                modelrowCount++;
+            }
+        }
+    }
+
     // this does not work now. similar to updateCalendar, purpose is to replace that since it forces 
     // events to be added to calendar without any check whatsoever or user accepting.
-    private void showInvites(){
-        //_invitationEventModel
-        int modelrowCount = _invitationEventModel.getRowCount();
+    private void showInvites() {
+        getModelrowCount();
         File _testLog = new File(Serialize._serverFile);
         try {
             Serialize.OpenServerFiles(_testLog);
             ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
-            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
-                Event event = it.next();
-                boolean eventExist = false; // assumption is that the event is not here already
-                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
-                    for(Event e : _currUserEvents){
-                        if(e.getEventName().equals(event.getEventName())){
-                            eventExist = true;
+            if (_currUserEvents != null) {
+                for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
+                    Event event;
+                    event = it.next();
+                    boolean eventExist = false; // assumption is that the event is not here already
+                    if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
+                        for (Event e : _currUserEvents) {
+                            if (e.getEventName().equals(event.getEventName())) {
+                                eventExist = true;
+                            }
                         }
+                        if (eventExist == false) {
+                            _invitationEventModel.setValueAt(event.getEventName(), modelrowCount, 0);
+                            modelrowCount++;
+                        } // only add if this is false
                     }
-                    if(eventExist == false){
-                        _invitationEventModel.setValueAt(event.getEventName(), modelrowCount, 0);
-                        modelrowCount++;
-                    } // only add if this is false
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     // update Calendar so when new events are added, the calendar gets updated with those events
     private void updateCalendar() {
-        File _testLog = new File(Serialize._serverFile);
-        try {
-            Serialize.OpenServerFiles(_testLog);
-            ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
-            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
-                Event event = it.next();
-                boolean eventExist = false; // assumption is that the event is not here already
-                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
-                    for(Event e : _currUserEvents){
-                        if(e.getEventName().equals(event.getEventName())){
-                            eventExist = true;
-                        }
-                    }
-                    if(eventExist == false){
-                        _currUserEvents.add(event);
-                    } // only add if this is false
-                }
+        if (_currentUser != null) {
+            System.out.println("Updating " + _currentUser.getUsername());
+            try {
+                int userId = dbModel.findId(_currentUser.getUsername(), "User");
+                dbModel.updateUserEvents(userId);
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            _userInfo.put(_currentUser, _currUserEvents);
-            Serialize.saveUserFiles(Serialize._fileLocation);
-        } catch (IOException ex) {
-            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+<<<<<<< HEAD
         //refreshCalendar(_realMonth, _realYear);
+=======
+        
+//        File _testLog = new File(Serialize._serverFile);
+//        try {
+//            Serialize.OpenServerFiles(_testLog);
+//            ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
+//            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
+//                Event event = it.next();
+//                boolean eventExist = false; // assumption is that the event is not here already
+//                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
+//                    for (Event e : _currUserEvents) {
+//                        if (e.getEventName().equals(event.getEventName())) {
+//                            eventExist = true;
+//                        }
+//                    }
+//                    if (eventExist == false) {
+//                        _currUserEvents.add(event);
+//                    } // only add if this is false
+//                }
+//            }
+//            _userInfo.put(_currentUser, _currUserEvents);
+//            Serialize.saveUserFiles(Serialize._fileLocation);
+//        } catch (IOException ex) {
+//            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
+//
+//        System.out.println("updating ...");
         
-        System.out.println("updating ...");
     }
 
     static class tblCalendarRenderer extends DefaultTableCellRenderer {
@@ -792,8 +821,12 @@ public class GUI extends javax.swing.JFrame {
         c.gridx = 0;
         c.gridy = 0;
         upperPanel.add(btnBack, c);
+<<<<<<< HEAD
         
         //seperator
+=======
+
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         upperPanel.add(new javax.swing.JSeparator(
@@ -804,15 +837,23 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 0;
         c.fill = GridBagConstraints.NONE;
         upperPanel.add(btnCreateEvent, c);
+<<<<<<< HEAD
         
         //TIME
+=======
+
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.WEST;
         lowerPanel.add(new javax.swing.JLabel("Time"), c);
+<<<<<<< HEAD
         
         //seperator
+=======
+
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.CENTER;
@@ -825,8 +866,13 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
+<<<<<<< HEAD
         lowerPanel.add(new javax.swing.JLabel("Event"), c);
         
+=======
+        lowerPanel.add(new javax.swing.JLabel("Events"), c);
+
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
         for (int i = 1; i <= 24; i++) {
@@ -837,27 +883,36 @@ public class GUI extends javax.swing.JFrame {
             c.gridwidth = 1;
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1)), c);
+<<<<<<< HEAD
             
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
             javax.swing.SwingConstants.VERTICAL), c);
             
+=======
+
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
             c.gridx = 2;
             c.gridwidth = 3;
             c.weightx = 1;
             //TODO: add event description (if it exists)
-            
-            
+
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
             c.gridx = 0;
             c.gridy++;
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1) + ":30"), c);
+<<<<<<< HEAD
             
+=======
+
+            //event
+            c.fill = GridBagConstraints.HORIZONTAL;
+>>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
@@ -891,12 +946,12 @@ public class GUI extends javax.swing.JFrame {
                 lowerPanel.add(btnDeleteEvent, c);
             }
         }
-        
+
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 1;
         dateGUI.add(upperPanel, c);
-        
+
         c.gridx = 0;
         c.gridy = 1;
         dateGUI.add(scroll, c);
@@ -912,7 +967,7 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
         Encryption encrypt = new Encryption();
-        if (_logged == true && (!"".equals(newPassword) || newPassword != null)) {
+        if ((!"".equals(newPassword) || newPassword != null)) {
             try {
                 _currentUser.setPassword(encrypt.getEncryptedPassword(newPassword,
                         _currentUser.getSalt()));
