@@ -7,7 +7,9 @@ package scheduler;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -199,6 +201,12 @@ public class AddUsers extends javax.swing.JFrame {
         byte[] encryptedPassword = null;
         byte[] salt = null;
 
+        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
+            User user = u.next();
+            if(user.getUsername().equals(username)){
+                JOptionPane.showMessageDialog(null, "This Username ("+username+") has been taken", "Username Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         if (!password.equals(confPassword)) {
             JOptionPane.showMessageDialog(null, "Password did not match", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
         } else if (isvalidated == false) {
@@ -222,6 +230,11 @@ public class AddUsers extends javax.swing.JFrame {
                 }
                 GUI._userInfo.put(newUser, new ArrayList<>()); //newUser.isAdmin());
                 Serialize.saveUserFiles(Serialize._fileLocation);
+                try {
+                    dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
+                } catch (SQLException | ClassNotFoundException ex) {
+                    Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
                 clearText();
             } else {
@@ -231,6 +244,7 @@ public class AddUsers extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCreateActionPerformed
 
+    
     private void clearText() {
         txtUsername.setText("");
         txtPassword.setText("");
