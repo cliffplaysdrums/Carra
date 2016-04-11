@@ -736,11 +736,7 @@ public class GUI extends javax.swing.JFrame {
      * consists of an upper and lower Jpanel inside the dateGUI JPanel
      */
     private void buildDateGUI() {
-        //load events
-        //month selected = _currentMonth
-        //year selected = _currentYear
         GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth, 1);
-        //numDays = calendar.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
         int offset = testCalendar.get(GregorianCalendar.DAY_OF_WEEK) - 1;
         
         int row = tblCalendar.getSelectedRow();
@@ -750,6 +746,7 @@ public class GUI extends javax.swing.JFrame {
         
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
         GridBagConstraints c = new GridBagConstraints();
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
@@ -762,8 +759,12 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
 
         //coloring
-        dateGUI.setBackground(pnlBackground.getBackground());
-        dateGUI.setForeground(pnlBackground.getForeground());
+        dateGUI.setBackground(tblCalendar.getBackground());
+        dateGUI.setForeground(tblCalendar.getForeground());
+        upperPanel.setBackground(tblCalendar.getBackground());
+        upperPanel.setForeground(tblCalendar.getForeground());
+        lowerPanel.setBackground(tblCalendar.getBackground());
+        lowerPanel.setForeground(tblCalendar.getForeground());
         btnBack.setBackground(btnUCreateEvent.getBackground());
         btnBack.setForeground(btnUCreateEvent.getForeground());
         btnBack.setFont(btnUCreateEvent.getFont());
