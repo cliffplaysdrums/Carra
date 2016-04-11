@@ -648,7 +648,8 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        refreshCalendar(_realMonth, _realYear);
+        //refreshCalendar(_realMonth, _realYear);
+        refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
         
@@ -735,6 +736,25 @@ public class GUI extends javax.swing.JFrame {
      * consists of an upper and lower Jpanel inside the dateGUI JPanel
      */
     private void buildDateGUI() {
+        //load events
+        //month selected = _currentMonth + 1
+        //year selected = _currentYear
+        GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth + 1, 1);
+        //numDays = calendar.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
+        int day1 = testCalendar.get(GregorianCalendar.DAY_OF_WEEK);
+        int offset = day1 - 1;
+        
+        int row = tblCalendar.getSelectedRow();
+        int col = tblCalendar.getSelectedColumn();
+        ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
+        for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
+            Event e = it.next();
+            //System.out.println(e.getEventDate().toString());
+            //System.out.println(row * 7 + col + 1 - offset);
+            System.out.println(day1);
+        }
+        
+        //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
         GridBagConstraints c = new GridBagConstraints();
@@ -743,7 +763,6 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
         upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
         scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
-        //lowerPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height));
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
