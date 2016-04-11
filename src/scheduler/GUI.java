@@ -30,6 +30,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -815,8 +816,9 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
-        scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
+        //upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
+        //scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
+        
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
@@ -952,8 +954,9 @@ public class GUI extends javax.swing.JFrame {
 
         c.gridx = 0;
         c.gridy = 1;
+        c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
-
+        
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
         });
