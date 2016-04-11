@@ -518,14 +518,14 @@ public class GUI extends javax.swing.JFrame {
     // logout redirects user to login page
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         // TODO add your handling code here:
+        _currentUser.setLogged(false);
+        _currentUser = null;
         this.dispose();
         try {
             new Logon().setVisible(true);
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        _currentUser.setLogged(false);
-        _currentUser = null;
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void mnuRemoveUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuRemoveUserActionPerformed
