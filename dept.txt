@@ -1,0 +1,1 @@
+insert into department (deptName) values ("Staff"), ("IT"), ("Services"), ("Marketing"), ("Human Resources"), ("Financial"), ("Purchasing"), ("Sales"), ("Inventory"), ("Licenses"), ("Operational"), ("Admin");
