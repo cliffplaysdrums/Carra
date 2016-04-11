@@ -36,6 +36,7 @@ public class Event implements Serializable{
     };
     
     private String _eventName;
+    private String _eventDescription;
     private String _eventDate;
     private String _eventTime;
     private String _eventPriority;
@@ -50,6 +51,10 @@ public class Event implements Serializable{
         this._eventCreator = user;
         this._rescheduled = false;
         _eventAttendees = new ArrayList<>();
+    }
+    
+    public void setDescription(String descr) {
+        this._eventDescription = descr;
     }
     
     public void setDate(String date){
@@ -74,6 +79,11 @@ public class Event implements Serializable{
     public void setRescheduled(){
         this._rescheduled = true;
     }
+    
+    public String getEventDescription() {
+        return this._eventDescription;
+    }
+    
     public String getEventDate(){
         return this._eventDate;
     }
