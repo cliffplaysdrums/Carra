@@ -75,6 +75,7 @@ public class GUI extends javax.swing.JFrame {
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
+    static boolean dateClicked = false;
 
     static int counter = 0;
 
@@ -775,8 +776,21 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbYearMouseClicked
 
     private void tblCalendarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendarMouseClicked
-        buildDateGUI();
-        jScrollPane1.setViewportView(dateGUI);
+        if (dateClicked) {
+            dateClicked = false;
+            buildDateGUI();
+            jScrollPane1.setViewportView(dateGUI);
+        } else {
+            dateClicked = true;
+            java.util.Timer t = new java.util.Timer();
+            t.schedule(new java.util.TimerTask() {
+
+                @Override
+                public void run() {
+                    dateClicked = false;
+                }
+            }, 700);
+        }
     }
 
 //GEN-LAST:event_tblCalendarMouseClicked

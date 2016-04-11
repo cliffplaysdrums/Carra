@@ -56,7 +56,7 @@ public class RemoveUser extends javax.swing.JFrame {
             }
         });
 
-        btnHome.setText("Home");
+        btnHome.setText("Back");
         btnHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHomeActionPerformed(evt);
