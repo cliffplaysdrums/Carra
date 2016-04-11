@@ -872,6 +872,13 @@ public class GUI extends javax.swing.JFrame {
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
             if (e.getEventDate().equals(dateSelected)) {
+                javax.swing.JButton btnDeleteEvent = new javax.swing.JButton("Delete");
+                btnDeleteEvent.setBackground(btnUCreateEvent.getBackground());
+                btnDeleteEvent.setForeground(btnUCreateEvent.getForeground());
+                btnDeleteEvent.setFont(btnUCreateEvent.getFont());
+                btnDeleteEvent.addActionListener((java.awt.event.ActionEvent evt) -> {
+                    //delete event code here
+                });
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
@@ -880,6 +887,8 @@ public class GUI extends javax.swing.JFrame {
                 if (min >= 30) c.gridy++;
                 
                 lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
+                c.gridx = 5;
+                lowerPanel.add(btnDeleteEvent, c);
             }
         }
         
