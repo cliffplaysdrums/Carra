@@ -26,7 +26,6 @@ public class Logon extends javax.swing.JFrame {
      * @throws java.io.IOException
      */
     File _testLog;
-    static String _loginUsername;
 
     public Logon() throws IOException {
         initComponents();
@@ -156,8 +155,9 @@ public class Logon extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
+        reset();
         Encryption encrypt = new Encryption();
-        _loginUsername = txtUsername.getText();
+        String _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
 
@@ -170,9 +170,8 @@ public class Logon extends javax.swing.JFrame {
                     if (user.getUsername().equals(_loginUsername)) {
                         if (encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
                             valid = true;
-                            user.setLogged();
+                            user.setLogged(true);
                             JOptionPane.showMessageDialog(null, "Successful");
-                            GUI._logged = true;
                             try {
                                 this.dispose();
                                 new GUI().setVisible(true);
@@ -192,6 +191,12 @@ public class Logon extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnLoginActionPerformed
 
+    private void reset(){
+        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
+            User user = u.next();
+            user.setLogged(false);
+        }
+    }
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
         // TODO add your handling code here:
         this.dispose();

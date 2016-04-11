@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,10 +34,6 @@ public class dbModel {
             stmt.setString(3, email);
             stmt.setBoolean(4, isAdmin);
             stmt.executeUpdate();
-            sql = "INSERT INTO Department (deptName) VALUES (?)";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, dept);
-            stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -48,18 +45,42 @@ public class dbModel {
         }
     }
     
-    public static void createEvent(String eventName, String eventTime, String eventPriority, boolean rescheduled, String creator) throws SQLException, ClassNotFoundException{
+    public static void addUserDept(String username, String dept) throws ClassNotFoundException, SQLException{
         Connection conn = null;
         PreparedStatement stmt = null;
-        try{
+        try {
             conn = getConnection();
-            sql = "insert into event(eventName, eventTime, eventPriority, rescheduled, creator) values(?,?,?,?,?)";
+            sql = "INSERT INTO UserDept (userId, deptId) VALUES (?, ?)";
+            stmt = conn.prepareStatement(sql);
+            int userId = findId(username, "User");
+            int deptId = findId(dept, "Dept");
+            stmt.setInt(1, userId);
+            stmt.setInt(2, deptId);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (stmt != null && conn != null) {
+                stmt.close();
+                conn.close();
+            }
+
+        }
+    }
+
+    public static void createEvent(String eventName, String eventDate, String eventTime, String eventPriority, boolean rescheduled, String creator) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            sql = "insert into event(eventName, eventDate, eventTime, eventPriority, rescheduled, creator) values(?,?,?,?,?,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, eventName);
-            stmt.setString(2, eventTime);
-            stmt.setString(3, eventPriority);
-            stmt.setBoolean(4, rescheduled);
-            stmt.setString(5, creator);
+            stmt.setString(2, eventDate);
+            stmt.setString(3, eventTime);
+            stmt.setString(4, eventPriority);
+            stmt.setBoolean(5, rescheduled);
+            stmt.setString(6, creator);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -69,28 +90,34 @@ public class dbModel {
                 conn.close();
             }
         }
-        
+
     }
 
-    public static int findId(String name, String query) throws ClassNotFoundException, SQLException{
+    public static int findId(String name, String query) throws ClassNotFoundException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Integer id = null;
-        try{
+        try {
             conn = getConnection();
-            if("Event".equals(query)){
+            if ("Event".equals(query)) {
                 sql = "select eventId from Event where eventName = ?";
-            }else{
+            } else if("User".equals(query)){
                 sql = "select userId from user where username = ?";
+            }else if("Dept".equals(query)){
+                sql = "select deptId from Department where deptName = ?";
             }
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, name);
             rs = stmt.executeQuery();
-            if("Event".equals(query)){
-                id = rs.getInt("eventId");
-            }else{
-                id = rs.getInt("userId");
+            if (rs.next()) {
+                if ("Event".equals(query)) {
+                    id = rs.getInt("eventId");
+                } else if("User".equals(query)){
+                    id = rs.getInt("userId");
+                }else if("Dept".equals(query)){
+                    id = rs.getInt("deptId");
+                }
             }
             id = rs.getInt(1);
         } catch (SQLException ex) {
@@ -103,18 +130,19 @@ public class dbModel {
         }
         return id;
     }
-    
-    public static void showUsers() throws ClassNotFoundException, SQLException{
+
+    public static void showUsers(String un) throws ClassNotFoundException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String username = null;
-        try{
+        try {
             conn = getConnection();
-            sql = "select username from user";
+            sql = "select username from user where username <> ?";
             stmt = conn.prepareStatement(sql);
+            stmt.setString(1, un);
             rs = stmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 username = rs.getString("username");
                 CreateEvent._userModel.setValueAt(username, CreateEvent._rowCounter, 0);
                 CreateEvent._rowCounter++;
@@ -128,15 +156,57 @@ public class dbModel {
             }
         }
     }
-    public static void insertUserEvent(int userId, int deptId) throws SQLException, ClassNotFoundException{
+    
+    public static void authenticateUser(String username, String password){
+        
+    }
+
+    public static void updateUserEvents(int userId) throws SQLException, ClassNotFoundException {
+        ArrayList<Event> currUserEvents = GUI._userInfo.get(GUI._currentUser);
+        currUserEvents.clear();
         Connection conn = null;
         PreparedStatement stmt = null;
-        try{
+        ResultSet rs = null;
+        try {
             conn = getConnection();
-            sql = "insert into userevent (userId, deptId) values(?,?)";
+            sql = "select eventName, eventDate, eventTime, eventPriority, rescheduled from Event e "
+                    + "inner join userevent ue on e.eventId = ue.eventId "
+                    + "inner join user u on ue.userId = u.userId"
+                    + " where u.userId = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
-            stmt.setInt(2, deptId);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                String eventName = rs.getString("eventName");
+                String eventTime = rs.getString("eventTime");
+                String eventDate = rs.getString("eventDate");
+                String eventPriority = rs.getString("eventPriority");
+                boolean rescheduled = rs.getBoolean("rescheduled");
+                User creator = null; // should get the user
+                Event e = new Event(eventName, eventDate, eventTime, creator);
+                currUserEvents.add(e);
+                System.out.println("event "+eventName+" for user "+GUI._currentUser.getUsername());
+            }
+            GUI._userInfo.put(GUI._currentUser, currUserEvents);
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (stmt != null && conn != null) {
+                stmt.close();
+                conn.close();
+            }
+        }
+    }
+
+    public static void insertUserEvent(int userId, int eventId) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            sql = "insert into userevent (userId, eventId) values(?,?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, eventId);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,6 +217,7 @@ public class dbModel {
             }
         }
     }
+
     private static Connection getConnection() throws ClassNotFoundException {
         Connection conn = null;
         try {
