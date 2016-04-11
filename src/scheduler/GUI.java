@@ -40,7 +40,6 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
-<<<<<<< HEAD
     
     /* Variables for the dateGUI
      * These only affect the appearance of the "hidden" table that is 
@@ -51,8 +50,6 @@ public class GUI extends javax.swing.JFrame {
     private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
     private java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
     private java.awt.Color BTN_FOREGROUND_COLOR = new java.awt.Color(255, 255, 255);
-=======
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
 
     /**
      * Creates new form GUI
@@ -159,8 +156,6 @@ public class GUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
         pnlBackground.setBackground(new java.awt.Color(204, 255, 204));
         pnlBackground.setForeground(new java.awt.Color(51, 51, 51));
 
@@ -233,8 +228,9 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(pnlBackgroundLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(cmbYear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
                         .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnPrev)
@@ -242,14 +238,17 @@ public class GUI extends javax.swing.JFrame {
                         .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(pnlBackgroundLayout.createSequentialGroup()
                                 .addGap(361, 361, 361)
-                                .addComponent(lblMonth, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                                .addComponent(lblMonth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(403, 403, 403)
                                 .addComponent(btnNext))
                             .addGroup(pnlBackgroundLayout.createSequentialGroup()
                                 .addGap(353, 353, 353)
-                                .addComponent(lblUserName, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                                .addComponent(lblUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(389, 389, 389)
-                                .addComponent(btnLogout)))))
+                                .addComponent(btnLogout))))
+                    .addGroup(pnlBackgroundLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 963, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 17, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnlBackgroundLayout.setVerticalGroup(
@@ -274,8 +273,6 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(7, 7, 7))
         );
 
-        jPanel1.add(pnlBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(168, 0, 1020, 600));
-
         jPanel2.setBackground(new java.awt.Color(204, 255, 255));
 
         tblUpcomingEvents.setModel(_upcomingEventsModel);
@@ -299,7 +296,20 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 600));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(pnlBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlBackground, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         jMenu1.setText("File");
 
@@ -394,7 +404,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1186, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -660,9 +670,8 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-<<<<<<< HEAD
+        
         //refreshCalendar(_realMonth, _realYear);
-=======
         
 //        File _testLog = new File(Serialize._serverFile);
 //        try {
@@ -687,7 +696,7 @@ public class GUI extends javax.swing.JFrame {
 //        } catch (IOException ex) {
 //            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
 //        }
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
+
         refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
@@ -821,12 +830,8 @@ public class GUI extends javax.swing.JFrame {
         c.gridx = 0;
         c.gridy = 0;
         upperPanel.add(btnBack, c);
-<<<<<<< HEAD
         
         //seperator
-=======
-
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         upperPanel.add(new javax.swing.JSeparator(
@@ -837,23 +842,15 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 0;
         c.fill = GridBagConstraints.NONE;
         upperPanel.add(btnCreateEvent, c);
-<<<<<<< HEAD
         
         //TIME
-=======
-
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.WEST;
         lowerPanel.add(new javax.swing.JLabel("Time"), c);
-<<<<<<< HEAD
         
         //seperator
-=======
-
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.CENTER;
@@ -866,13 +863,8 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
-<<<<<<< HEAD
         lowerPanel.add(new javax.swing.JLabel("Event"), c);
         
-=======
-        lowerPanel.add(new javax.swing.JLabel("Events"), c);
-
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
         for (int i = 1; i <= 24; i++) {
@@ -883,16 +875,12 @@ public class GUI extends javax.swing.JFrame {
             c.gridwidth = 1;
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1)), c);
-<<<<<<< HEAD
             
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
             javax.swing.SwingConstants.VERTICAL), c);
             
-=======
-
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
             c.gridx = 2;
@@ -906,13 +894,9 @@ public class GUI extends javax.swing.JFrame {
             c.gridy++;
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1) + ":30"), c);
-<<<<<<< HEAD
-            
-=======
 
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
->>>>>>> 74096e8dc90288706c680e449622ffea51f1e38c
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
