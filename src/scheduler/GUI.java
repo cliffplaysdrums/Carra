@@ -777,6 +777,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbYearMouseClicked
 
     private void tblCalendarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendarMouseClicked
+        //respond only to double click
         if (dateClicked) {
             dateClicked = false;
             buildDateGUI();
@@ -806,11 +807,11 @@ public class GUI extends javax.swing.JFrame {
         int row = tblCalendar.getSelectedRow();
         int col = tblCalendar.getSelectedColumn();
         int daySelected = row * 7 + col + 1 - offset;
-        String dateSelected = (_currentMonth + 1) + "/" + daySelected + "/" + _currentYear;
+        String dayS = daySelected < 10 ? "0"+String.valueOf(daySelected) : String.valueOf(daySelected);
+        String dateSelected = (_currentMonth + 1) + "/" + dayS + "/" + _currentYear;
         
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
-        //jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
         GridBagConstraints c = new GridBagConstraints();
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
@@ -882,7 +883,7 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
-        lowerPanel.add(new javax.swing.JLabel("Event"), c);
+        lowerPanel.add(new javax.swing.JLabel("Events"), c);
         
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
@@ -925,6 +926,7 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.gridwidth = 3;
         c.weightx = 1;
+        //add event descriptions and delete buttons
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
@@ -936,13 +938,14 @@ public class GUI extends javax.swing.JFrame {
                 btnDeleteEvent.addActionListener((java.awt.event.ActionEvent evt) -> {
                     //delete event code here
                 });
+
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
-                
+
                 c.gridy = (hour + 1) * 2;
                 if (min >= 30) c.gridy++;
-                
+
                 lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
                 c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);
