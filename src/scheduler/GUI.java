@@ -810,15 +810,18 @@ public class GUI extends javax.swing.JFrame {
         
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
+        //jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
         GridBagConstraints c = new GridBagConstraints();
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        //upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
-        //scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
-        
+        int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+        int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+        //jScrollPane1.setVerticalScrollBarPolicy(never);
+        //scroll.setVerticalScrollBarPolicy(always);
+        scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height));
+        lowerPanel.setPreferredSize(new java.awt.Dimension(980, 1100));
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
@@ -902,7 +905,6 @@ public class GUI extends javax.swing.JFrame {
             c.gridx = 2;
             c.gridwidth = 3;
             c.weightx = 1;
-            //TODO: add event description (if it exists)
 
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
