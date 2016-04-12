@@ -72,7 +72,7 @@ public class GUI extends javax.swing.JFrame {
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
     static HashMap<String, ArrayList> _allDepts = new HashMap<>();
     static String _eventday;
-    static User _currentUser;
+    static User _currentUser = null;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
@@ -441,7 +441,8 @@ public class GUI extends javax.swing.JFrame {
         tblCalendar.setColumnSelectionAllowed(true);
         tblCalendar.setRowSelectionAllowed(true);
         tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+        
+        
         tblUpcomingEvents.getTableHeader().setResizingAllowed(false);
         tblUpcomingEvents.getTableHeader().setReorderingAllowed(false);
         tblUpcomingEvents.setColumnSelectionAllowed(true);
@@ -740,8 +741,8 @@ public class GUI extends javax.swing.JFrame {
             MatteBorder border = new MatteBorder(1, 1, 0, 0, color);
             setBorder(border);
             setForeground(Color.black);
-            //setSize(table.getColumnModel().getColumn(column).getWidth(),
-            //Short.MAX_VALUE);
+            setSize(table.getColumnModel().getColumn(column).getWidth(),
+            Short.MAX_VALUE);
             return this;
         }
     }

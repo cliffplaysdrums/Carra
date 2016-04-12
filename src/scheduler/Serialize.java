@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -69,4 +72,19 @@ public class Serialize {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static String getMD5(String input){
+		try{
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(input.getBytes());
+			BigInteger number = new BigInteger(1, messageDigest);
+			String hash = number.toString(16);
+			while(hash.length() < 32){
+				hash = "0" + hash;
+			}
+			return hash;
+		}catch(NoSuchAlgorithmException e){
+			throw new RuntimeException(e);
+		}
+	}
 }
