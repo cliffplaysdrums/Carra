@@ -30,6 +30,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -40,7 +41,6 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
-
     
     /* Variables for the dateGUI
      * These only affect the appearance of the "hidden" table that is 
@@ -76,6 +76,7 @@ public class GUI extends javax.swing.JFrame {
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
+    static boolean dateClicked = false;
 
     static int counter = 0;
 
@@ -672,6 +673,8 @@ public class GUI extends javax.swing.JFrame {
             }
         }
         
+        //refreshCalendar(_realMonth, _realYear);
+        
 //        File _testLog = new File(Serialize._serverFile);
 //        try {
 //            Serialize.OpenServerFiles(_testLog);
@@ -774,8 +777,21 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbYearMouseClicked
 
     private void tblCalendarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendarMouseClicked
-        buildDateGUI();
-        jScrollPane1.setViewportView(dateGUI);
+        if (dateClicked) {
+            dateClicked = false;
+            buildDateGUI();
+            jScrollPane1.setViewportView(dateGUI);
+        } else {
+            dateClicked = true;
+            java.util.Timer t = new java.util.Timer();
+            t.schedule(new java.util.TimerTask() {
+
+                @Override
+                public void run() {
+                    dateClicked = false;
+                }
+            }, 700);
+        }
     }
 
 //GEN-LAST:event_tblCalendarMouseClicked
@@ -800,8 +816,9 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
-        scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
+        //upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
+        //scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
+        
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
@@ -841,7 +858,7 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 0;
         c.fill = GridBagConstraints.NONE;
         upperPanel.add(btnCreateEvent, c);
-
+        
         //TIME
         c.gridx = 0;
         c.gridy = 1;
@@ -937,8 +954,9 @@ public class GUI extends javax.swing.JFrame {
 
         c.gridx = 0;
         c.gridy = 1;
+        c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
-
+        
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
         });

@@ -78,7 +78,7 @@ public class AddUsers extends javax.swing.JFrame {
         lblPassword.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblPassword.setText("Password");
 
-        btnHome.setText("Home");
+        btnHome.setText("Back");
         btnHome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHomeActionPerformed(evt);
