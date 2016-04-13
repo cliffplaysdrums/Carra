@@ -946,7 +946,7 @@ public class GUI extends javax.swing.JFrame {
                 c.gridy = (hour + 1) * 2;
                 if (min >= 30) c.gridy++;
 
-                lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
+                lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);
             }

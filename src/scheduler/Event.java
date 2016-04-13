@@ -44,8 +44,9 @@ public class Event implements Serializable{
     private boolean _rescheduled;
     private ArrayList<String> _eventAttendees;
     
-    public Event(String eventName, String date, String time, User user){
+    public Event(String eventName, String eventDescr, String date, String time, User user){
         this._eventName = eventName;
+        this._eventDescription = eventDescr;
         this._eventDate = date;
         this._eventTime = time;
         this._eventCreator = user;
