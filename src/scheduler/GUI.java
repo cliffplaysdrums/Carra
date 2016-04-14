@@ -19,6 +19,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,7 +42,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Ayomitunde
  */
 public class GUI extends javax.swing.JFrame {
-    
+
     /* Variables for the dateGUI
      * These only affect the appearance of the "hidden" table that is 
      *   displayed when you click on a specific date
@@ -75,7 +77,10 @@ public class GUI extends javax.swing.JFrame {
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
+    private final ActionListener showEventsUp;
     static boolean dateClicked = false;
+    boolean showOneEvent = false;
+    static int _eventCount = 0;
 
     static int counter = 0;
 
@@ -95,6 +100,15 @@ public class GUI extends javax.swing.JFrame {
         };
         Timer checkUpdt = new Timer(5000, updateCalendar);
         checkUpdt.start();
+        showEventsUp = (ActionEvent e) -> {
+            if (_currentUser != null) {
+                if (showEvent()) {
+                    EventNotification.run();
+                }
+            }
+        };
+        Timer checkEvUp = new Timer(300000, showEventsUp);
+        checkEvUp.start();
     }
 
     /**
@@ -127,6 +141,7 @@ public class GUI extends javax.swing.JFrame {
         btnPrev = new javax.swing.JButton();
         lblMonth = new javax.swing.JLabel();
         lblUserName = new javax.swing.JLabel();
+        btnListEvents = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblUpcomingEvents = new javax.swing.JTable(){
@@ -222,6 +237,16 @@ public class GUI extends javax.swing.JFrame {
 
         lblUserName.setText("jLabel1");
 
+        btnListEvents.setBackground(new java.awt.Color(102, 204, 255));
+        btnListEvents.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        btnListEvents.setForeground(new java.awt.Color(255, 255, 255));
+        btnListEvents.setText("List Events");
+        btnListEvents.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListEventsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlBackgroundLayout = new javax.swing.GroupLayout(pnlBackground);
         pnlBackground.setLayout(pnlBackgroundLayout);
         pnlBackgroundLayout.setHorizontalGroup(
@@ -238,7 +263,9 @@ public class GUI extends javax.swing.JFrame {
                                 .addGap(353, 353, 353))
                             .addGroup(pnlBackgroundLayout.createSequentialGroup()
                                 .addComponent(btnUCreateEvent)
-                                .addGap(596, 596, 596)
+                                .addGap(27, 27, 27)
+                                .addComponent(btnListEvents)
+                                .addGap(464, 464, 464)
                                 .addComponent(lblUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,7 +283,9 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnUCreateEvent)
+                    .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnUCreateEvent)
+                        .addComponent(btnListEvents))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnLogout)
                         .addComponent(lblUserName)))
@@ -438,7 +467,7 @@ public class GUI extends javax.swing.JFrame {
         tblCalendar.setColumnSelectionAllowed(true);
         tblCalendar.setRowSelectionAllowed(true);
         tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         reloadUpcoming();
         tblUpcomingEvents.getTableHeader().setResizingAllowed(false);
         tblUpcomingEvents.getTableHeader().setReorderingAllowed(false);
@@ -465,7 +494,7 @@ public class GUI extends javax.swing.JFrame {
                         }
                     }
                     break;
-                }else{
+                } else {
                     lblUserName.setText("Unknown User");
                 }
             }
@@ -488,12 +517,13 @@ public class GUI extends javax.swing.JFrame {
         refreshCalendar(_realMonth, _realYear);
     }
 
-    private void reloadUpcoming(){
+    private void reloadUpcoming() {
         int rowCount = _upcomingEventsModel.getRowCount();
-        for(int i = 0; i < rowCount; i++){
+        for (int i = 0; i < rowCount; i++) {
             _upcomingEventsModel.setValueAt("", i, 0);
         }
     }
+
     //Go through all events for current user, if date is today, update table to show them
     public static void updateUpcoming(String currentDate) {
         int j = 0;
@@ -678,13 +708,52 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
+        if (showOneEvent == false) {
+            if (showEvent()) {
+                EventNotification.run();
+            }
+            showOneEvent = !showOneEvent;
+        }
         refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
         updateUpcoming(currentDate);
-//
-//        System.out.println("updating ...");
-        
+    }
+
+    private boolean showEvent() {
+        int i = 0;
+        boolean eventExist = false;
+        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+            Event e = it.next();
+            String currDate = _df.format(_currentDate);
+            if (currDate.equals(e.getEventDate())) {
+                String time = LocalTime.now().toString();
+                time = time.substring(0, time.lastIndexOf("."));
+                int timeDue = calcTime(e.getEventTime()) - calcTime(time);
+                System.out.println("curr time " + time + " even time " + e.getEventTime() + " time diff " + timeDue);
+                String tD = timeDue > 1 ? String.valueOf(timeDue) + " minutes" : String.valueOf(timeDue) + " minute";
+                if (timeDue >= 0 && timeDue <= 15) {
+                    eventExist = true;
+                    EventNotification._upcomingEventsModel.setValueAt(e.getEventDescription(), i, 0);
+                    EventNotification._upcomingEventsModel.setValueAt(tD, i, 1);
+                    i++;
+                }
+            }
+        }
+        return eventExist;
+    }
+
+    private int calcTime(String time) {
+        int currTime = 0;
+        String cat = "";
+        for (int i = 0; i < time.length(); i++) {
+            if (time.charAt(i) != ':') {
+                cat += time.charAt(i);
+            } else {
+                currTime += Integer.parseInt(cat);
+                cat = "";
+            }
+        }
+        return currTime;
     }
 
     static class tblCalendarRenderer extends DefaultTableCellRenderer {
@@ -721,7 +790,7 @@ public class GUI extends javax.swing.JFrame {
             setBorder(border);
             setForeground(Color.black);
             setSize(table.getColumnModel().getColumn(column).getWidth(),
-            Short.MAX_VALUE);
+                    Short.MAX_VALUE);
             return this;
         }
     }
@@ -783,13 +852,13 @@ public class GUI extends javax.swing.JFrame {
     private void buildDateGUI() {
         GregorianCalendar testCalendar = new GregorianCalendar(_currentYear, _currentMonth, 1);
         int offset = testCalendar.get(GregorianCalendar.DAY_OF_WEEK) - 1;
-        
+
         int row = tblCalendar.getSelectedRow();
         int col = tblCalendar.getSelectedColumn();
         int daySelected = row * 7 + col + 1 - offset;
-        String dayS = daySelected < 10 ? "0"+String.valueOf(daySelected) : String.valueOf(daySelected);
+        String dayS = daySelected < 10 ? "0" + String.valueOf(daySelected) : String.valueOf(daySelected);
         String dateSelected = (_currentMonth + 1) + "/" + dayS + "/" + _currentYear;
-        
+
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
@@ -822,7 +891,6 @@ public class GUI extends javax.swing.JFrame {
         btnCreateEvent.setForeground(btnUCreateEvent.getForeground());
 
         //layout
-        
         //BACK
         c.insets = new java.awt.Insets(2, 2, 4, 4);
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -830,33 +898,33 @@ public class GUI extends javax.swing.JFrame {
         c.gridx = 0;
         c.gridy = 0;
         upperPanel.add(btnBack, c);
-        
+
         //seperator
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         upperPanel.add(new javax.swing.JSeparator(
-            javax.swing.SwingConstants.VERTICAL), c);
-        
+                javax.swing.SwingConstants.VERTICAL), c);
+
         //CREATE EVENT
         c.gridx = 2;
         c.gridy = 0;
         c.fill = GridBagConstraints.NONE;
         upperPanel.add(btnCreateEvent, c);
-        
+
         //TIME
         c.gridx = 0;
         c.gridy = 1;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.WEST;
         lowerPanel.add(new javax.swing.JLabel("Time"), c);
-        
+
         //seperator
         c.gridx = 1;
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.CENTER;
         lowerPanel.add(new javax.swing.JSeparator(
-            javax.swing.SwingConstants.VERTICAL), c);
-        
+                javax.swing.SwingConstants.VERTICAL), c);
+
         //EVENTS
         c.gridx = 2;
         c.gridwidth = 3;
@@ -864,7 +932,7 @@ public class GUI extends javax.swing.JFrame {
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
         lowerPanel.add(new javax.swing.JLabel("Events"), c);
-        
+
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
         for (int i = 1; i <= 24; i++) {
@@ -875,12 +943,12 @@ public class GUI extends javax.swing.JFrame {
             c.gridwidth = 1;
             c.weightx = 0;
             lowerPanel.add(new javax.swing.JLabel(Integer.toString(i - 1)), c);
-            
+
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
-            javax.swing.SwingConstants.VERTICAL), c);
-            
+                    javax.swing.SwingConstants.VERTICAL), c);
+
             //event
             c.fill = GridBagConstraints.HORIZONTAL;
             c.gridx = 2;
@@ -899,9 +967,9 @@ public class GUI extends javax.swing.JFrame {
             c.gridx = 1;
             c.fill = GridBagConstraints.BOTH;
             lowerPanel.add(new javax.swing.JSeparator(
-            javax.swing.SwingConstants.VERTICAL), c);
+                    javax.swing.SwingConstants.VERTICAL), c);
         }
-        
+
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.NONE;
         c.gridwidth = 3;
@@ -930,7 +998,9 @@ public class GUI extends javax.swing.JFrame {
                 int min = Integer.parseInt(time[1]);
 
                 c.gridy = (hour + 1) * 2;
-                if (min >= 30) c.gridy++;
+                if (min >= 30) {
+                    c.gridy++;
+                }
 
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
@@ -947,7 +1017,7 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
-        
+
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
         });
@@ -955,11 +1025,10 @@ public class GUI extends javax.swing.JFrame {
         btnCreateEvent.addActionListener(this::btnUCreateEventActionPerformed);
     }
 
-    
-    private void deleteEvent(String eventName, String eventTime){
-        for(Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();){
+    private void deleteEvent(String eventName, String eventTime) {
+        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
             Event e = it.next();
-            if(e.getEventName().equals(eventName) && e.getEventTime().equals(eventTime)){
+            if (e.getEventName().equals(eventName) && e.getEventTime().equals(eventTime)) {
                 it.remove();
             }
         }
@@ -1002,6 +1071,14 @@ public class GUI extends javax.swing.JFrame {
         CreateEvent.run();
     }//GEN-LAST:event_btnUCreateEventActionPerformed
 
+    private void btnListEventsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListEventsActionPerformed
+        // TODO add your handling code here:
+        // first set count dynamically.. sorta
+        _eventCount = _userInfo.get(_currentUser).size();
+       ListEvents.run();
+
+    }//GEN-LAST:event_btnListEventsActionPerformed
+
     private void print() {
         try {
             tblCalendar.print();
@@ -1043,6 +1120,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnListEvents;
     private javax.swing.JButton btnLogout;
     private static javax.swing.JButton btnNext;
     private static javax.swing.JButton btnPrev;
