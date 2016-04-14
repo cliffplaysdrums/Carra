@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JColorChooser;
@@ -77,6 +78,7 @@ public class GUI extends javax.swing.JFrame {
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
     static boolean dateClicked = false;
+    static ArrayList<Event> _upcomingEvents = new ArrayList<Event>();
 
     static int counter = 0;
 
@@ -497,6 +499,7 @@ public class GUI extends javax.swing.JFrame {
                 for (Iterator<Event> it = currentuserEvents.iterator(); it.hasNext();) {
                     Event e = it.next();
                     if (e.getEventDate().equals(currentDate)) {
+                        if (!_upcomingEvents.contains(e)) addNotificationTimer(e);
                         if (j >= 5) {
                             break;
                         }
@@ -506,6 +509,27 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         }
+    }
+    
+    private static void addNotificationTimer(Event e) {
+        _upcomingEvents.add(e);
+        System.out.println("Upcoming: " + e.getEventDescription());
+        long time = Integer.parseInt(e.getEventTime());
+        java.util.Timer t = new java.util.Timer();
+        t.schedule(new launchNotification(e), time);
+    }
+    
+    private static class launchNotification extends TimerTask {
+        Event evt;
+        
+        public launchNotification(Event e) {
+            evt = e;
+        }
+        
+        public void run() {
+            new Notification(evt.getEventName(), evt.getEventDescription(),
+                    evt.getEventTime());
+        };
     }
 
     // hide admin functionalities from normal users
@@ -945,7 +969,8 @@ public class GUI extends javax.swing.JFrame {
 
                 c.gridy = (hour + 1) * 2;
                 if (min >= 30) c.gridy++;
-
+                
+                c.gridx = 4;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);
