@@ -229,46 +229,44 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(pnlBackgroundLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
                         .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnPrev)
-                            .addComponent(btnUCreateEvent))
-                        .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(pnlBackgroundLayout.createSequentialGroup()
+                                .addComponent(btnPrev)
                                 .addGap(361, 361, 361)
                                 .addComponent(lblMonth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(403, 403, 403)
-                                .addComponent(btnNext))
+                                .addGap(353, 353, 353))
                             .addGroup(pnlBackgroundLayout.createSequentialGroup()
-                                .addGap(353, 353, 353)
-                                .addComponent(lblUserName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(389, 389, 389)
-                                .addComponent(btnLogout))))
+                                .addComponent(btnUCreateEvent)
+                                .addGap(596, 596, 596)
+                                .addComponent(lblUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnNext)
+                            .addComponent(btnLogout)))
                     .addGroup(pnlBackgroundLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 963, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 17, Short.MAX_VALUE)))
+                        .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 942, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         pnlBackgroundLayout.setVerticalGroup(
             pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnUCreateEvent, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(lblUserName))
-                .addGap(18, 18, 18)
                 .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnPrev)
-                        .addComponent(lblMonth))
-                    .addComponent(btnNext))
+                    .addComponent(btnUCreateEvent)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnLogout)
+                        .addComponent(lblUserName)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                .addGroup(pnlBackgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPrev)
+                    .addComponent(lblMonth)
+                    .addComponent(btnNext))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(7, 7, 7))
@@ -680,32 +678,6 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        //refreshCalendar(_realMonth, _realYear);
-        
-//        File _testLog = new File(Serialize._serverFile);
-//        try {
-//            Serialize.OpenServerFiles(_testLog);
-//            ArrayList<Event> _currUserEvents = _userInfo.get(_currentUser);
-//            for (Iterator<Event> it = _allEvents.iterator(); it.hasNext();) {
-//                Event event = it.next();
-//                boolean eventExist = false; // assumption is that the event is not here already
-//                if (event.getAttendees().contains(_currentUser.getUsername()) || event.getEventCreator().equals(_currentUser)) {
-//                    for (Event e : _currUserEvents) {
-//                        if (e.getEventName().equals(event.getEventName())) {
-//                            eventExist = true;
-//                        }
-//                    }
-//                    if (eventExist == false) {
-//                        _currUserEvents.add(event);
-//                    } // only add if this is false
-//                }
-//            }
-//            _userInfo.put(_currentUser, _currUserEvents);
-//            Serialize.saveUserFiles(Serialize._fileLocation);
-//        } catch (IOException ex) {
-//            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-//        }
 
         refreshCalendar(_currentMonth, _currentYear);
         String currentDate = _df.format(_currentDate);
@@ -785,6 +757,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbYearMouseClicked
 
     private void tblCalendarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCalendarMouseClicked
+        //respond only to double click
         if (dateClicked) {
             dateClicked = false;
             buildDateGUI();
@@ -814,19 +787,22 @@ public class GUI extends javax.swing.JFrame {
         int row = tblCalendar.getSelectedRow();
         int col = tblCalendar.getSelectedColumn();
         int daySelected = row * 7 + col + 1 - offset;
-        String dateSelected = (_currentMonth + 1) + "/" + daySelected + "/" + _currentYear;
+        String dayS = daySelected < 10 ? "0"+String.valueOf(daySelected) : String.valueOf(daySelected);
+        String dateSelected = (_currentMonth + 1) + "/" + dayS + "/" + _currentYear;
         
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(980, 400));
         java.awt.Dimension d = new java.awt.Dimension(jScrollPane1.getPreferredSize());
         GridBagConstraints c = new GridBagConstraints();
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        //upperPanel.setPreferredSize(new java.awt.Dimension(d.width, d.height / 10));
-        //scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height - 10));
-        
+        int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+        int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+        //jScrollPane1.setVerticalScrollBarPolicy(never);
+        //scroll.setVerticalScrollBarPolicy(always);
+        scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height));
+        lowerPanel.setPreferredSize(new java.awt.Dimension(980, 1100));
 
         javax.swing.JButton btnBack = new javax.swing.JButton("Back");
         javax.swing.JButton btnCreateEvent = new javax.swing.JButton("Create Event");
@@ -887,7 +863,7 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1;
-        lowerPanel.add(new javax.swing.JLabel("Event"), c);
+        lowerPanel.add(new javax.swing.JLabel("Events"), c);
         
         //fill in times and event descriptions
         c.anchor = GridBagConstraints.WEST;
@@ -910,7 +886,6 @@ public class GUI extends javax.swing.JFrame {
             c.gridx = 2;
             c.gridwidth = 3;
             c.weightx = 1;
-            //TODO: add event description (if it exists)
 
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
@@ -931,6 +906,7 @@ public class GUI extends javax.swing.JFrame {
         c.fill = GridBagConstraints.NONE;
         c.gridwidth = 3;
         c.weightx = 1;
+        //add event descriptions and delete buttons
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
@@ -940,16 +916,23 @@ public class GUI extends javax.swing.JFrame {
                 btnDeleteEvent.setForeground(btnUCreateEvent.getForeground());
                 btnDeleteEvent.setFont(btnUCreateEvent.getFont());
                 btnDeleteEvent.addActionListener((java.awt.event.ActionEvent evt) -> {
-                    //delete event code here
+                    try {
+                        //delete event code here.. using name and time so it has to be exact event.. have to remove from all other users too
+                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
+                        deleteEvent(e.getEventName(), e.getEventTime());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 });
+
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
-                
+
                 c.gridy = (hour + 1) * 2;
                 if (min >= 30) c.gridy++;
-                
-                lowerPanel.add(new javax.swing.JLabel(e.getEventName()), c);
+
+                lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);
             }
@@ -972,6 +955,15 @@ public class GUI extends javax.swing.JFrame {
         btnCreateEvent.addActionListener(this::btnUCreateEventActionPerformed);
     }
 
+    
+    private void deleteEvent(String eventName, String eventTime){
+        for(Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();){
+            Event e = it.next();
+            if(e.getEventName().equals(eventName) && e.getEventTime().equals(eventTime)){
+                it.remove();
+            }
+        }
+    }
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
