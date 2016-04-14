@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JColorChooser;
@@ -81,6 +82,7 @@ public class GUI extends javax.swing.JFrame {
     static boolean dateClicked = false;
     boolean showOneEvent = false;
     static int _eventCount = 0;
+    static ArrayList<Event> _upcomingEvents = new ArrayList<>();
 
     static int counter = 0;
 
@@ -510,7 +512,6 @@ public class GUI extends javax.swing.JFrame {
             if (currentuserEvents != null) {
                 for (int i = 0; i < currentuserEvents.size(); i++) {
                     Event e = currentuserEvents.get(i);
-                    System.out.println("event date is " + e.getEventDate());
                 }
             }
         }
@@ -700,7 +701,6 @@ public class GUI extends javax.swing.JFrame {
     // update Calendar so when new events are added, the calendar gets updated with those events
     private void updateCalendar() {
         if (_currentUser != null) {
-            System.out.println("Updating " + _currentUser.getUsername());
             try {
                 int userId = dbModel.findId(_currentUser.getUsername(), "User");
                 dbModel.updateUserEvents(userId);
@@ -998,10 +998,8 @@ public class GUI extends javax.swing.JFrame {
                 int min = Integer.parseInt(time[1]);
 
                 c.gridy = (hour + 1) * 2;
-                if (min >= 30) {
-                    c.gridy++;
-                }
-
+                if (min >= 30) c.gridy++;
+                c.gridx = 4;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);

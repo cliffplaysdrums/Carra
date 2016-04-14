@@ -249,7 +249,6 @@ public class dbModel {
                 User creator = null; // should get the user
                 Event e = new Event(eventName, eventDescr, eventDate, eventTime, creator);
                 currUserEvents.add(e);
-                System.out.println("event "+eventName+" for user "+GUI._currentUser.getUsername());
             }
             GUI._userInfo.put(GUI._currentUser, currUserEvents);
         } catch (SQLException ex) {
