@@ -30,7 +30,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -442,7 +441,7 @@ public class GUI extends javax.swing.JFrame {
         tblCalendar.setRowSelectionAllowed(true);
         tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
-        
+        reloadUpcoming();
         tblUpcomingEvents.getTableHeader().setResizingAllowed(false);
         tblUpcomingEvents.getTableHeader().setReorderingAllowed(false);
         tblUpcomingEvents.setColumnSelectionAllowed(true);
@@ -459,7 +458,7 @@ public class GUI extends javax.swing.JFrame {
         if (_currentUser == null) {
             for (Iterator<User> u = _userInfo.keySet().iterator(); u.hasNext();) {
                 _currentUser = u.next();
-                if (_currentUser.getLogged() == true) {
+                if (_currentUser.getUsername().equals(Logon._loginUsername)) {
                     lblUserName.setText("User " + _currentUser.getUsername());
                     if (_currentUser.isAdmin() == false) {
                         hideNonAdmin();
@@ -468,6 +467,8 @@ public class GUI extends javax.swing.JFrame {
                         }
                     }
                     break;
+                }else{
+                    lblUserName.setText("Unknown User");
                 }
             }
         }
@@ -489,6 +490,12 @@ public class GUI extends javax.swing.JFrame {
         refreshCalendar(_realMonth, _realYear);
     }
 
+    private void reloadUpcoming(){
+        int rowCount = _upcomingEventsModel.getRowCount();
+        for(int i = 0; i < rowCount; i++){
+            _upcomingEventsModel.setValueAt("", i, 0);
+        }
+    }
     //Go through all events for current user, if date is today, update table to show them
     public static void updateUpcoming(String currentDate) {
         int j = 0;

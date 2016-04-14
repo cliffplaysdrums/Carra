@@ -6,6 +6,7 @@
 package scheduler;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,11 +107,16 @@ public class RemoveUser extends javax.swing.JFrame {
         for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
             User user = u.next();
             if(user.getUsername().equals(username)){
-                int reply = JOptionPane.showConfirmDialog(null, "Are you Sure?", "Delete "+user, JOptionPane.YES_NO_CANCEL_OPTION);
+                int reply = JOptionPane.showConfirmDialog(null, "Are you Sure?", "Delete "+user.getUsername(), JOptionPane.YES_NO_CANCEL_OPTION);
                 if(reply == JOptionPane.YES_OPTION){
-                    u.remove();
-                    JOptionPane.showMessageDialog(null, user+" Deleted");
-                    Serialize.saveUserFiles(Serialize._fileLocation);
+                    try {
+                        dbModel.removeUser(username);
+                        u.remove();
+                        JOptionPane.showMessageDialog(null, user+" Deleted");
+                        Serialize.saveUserFiles(Serialize._fileLocation);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(RemoveUser.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }else{
                     JOptionPane.showMessageDialog(null, "Canceled");
                 }

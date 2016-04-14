@@ -27,10 +27,11 @@ public class Logon extends javax.swing.JFrame {
      * @throws java.io.IOException
      */
     File _testLog;
-
+    static String _loginUsername = null;
+    
     public Logon() throws IOException {
         initComponents();
-        reset();
+        GUI._currentUser = null;
         this.getRootPane().setDefaultButton(btnLogin);
         _testLog = new File(Serialize._fileLocation);
         Serialize.OpenUserFiles(_testLog);
@@ -158,18 +159,18 @@ public class Logon extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
         Encryption encrypt = new Encryption();
-        String loginUsername = txtUsername.getText();
+        _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
 
-        if ("".equals(loginUsername) || "".equals(password)) {
+        if ("".equals(_loginUsername) || "".equals(password)) {
             JOptionPane.showMessageDialog(null, "Please Input a Username and Password", "Input Required", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
-                if (dbModel.logUser(loginUsername, password)) {
+                if (dbModel.logUser(_loginUsername, password)) {
                     for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
                         User user = u.next();
-                        if (user.getUsername().equals(loginUsername)) {
+                        if (user.getUsername().equals(_loginUsername)) {
                             user.setLogged(true);
                             try {
                                 valid = true;
@@ -181,10 +182,11 @@ public class Logon extends javax.swing.JFrame {
                         }
                     }
                 } else {
+                    // should only come here if db is not up to date with user... so insert user into db ?
                     for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
                         User user = u.next();
                         try {
-                            if (user.getUsername().equals(loginUsername)) {
+                            if (user.getUsername().equals(_loginUsername)) {
                                 if (encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
                                     valid = true;
                                     user.setLogged(true);
@@ -214,13 +216,6 @@ public class Logon extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnLoginActionPerformed
 
-    private void reset() {
-        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-            User user = u.next();
-            user.setLogged(false);
-        }
-        GUI._currentUser = null;
-    }
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
         // TODO add your handling code here:
         this.dispose();

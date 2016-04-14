@@ -25,7 +25,7 @@ public class dbModel {
     public static void insertUser(String username, String password, String email, String dept, boolean isAdmin) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement stmt = null;
-        password = Serialize.getMD5(password);
+        password = Encryption.getMD5(password);
         try {
             conn = getConnection();
             sql = "insert into user(username, password, email, isAdmin) values(?, ?, ?, ?)";
@@ -46,22 +46,37 @@ public class dbModel {
         }
     }
     
+    public static void removeUser(String username) throws SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try{
+            conn = getConnection();
+            sql = "delete from user where username = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public static boolean logUser(String user, String pass) throws ClassNotFoundException, SQLException{
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String username = null;
         String password = null;
-        pass = Serialize.getMD5(pass);
+        pass = Encryption.getMD5(pass);
         try {
             conn = getConnection();
-            sql = "select username, password from user";
+            sql = "select username, password from user where username = ? and password = ?";
             stmt = conn.prepareStatement(sql);
+            stmt.setString(1, user);
+            stmt.setString(2, pass);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 username = rs.getString("username");
                 password = rs.getString("password");
-                if(username.equals(user) && password.equals(pass)){
+                if(username != null && password != null){
                     return true;
                 }
             }

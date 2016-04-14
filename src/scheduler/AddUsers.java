@@ -49,7 +49,7 @@ public class AddUsers extends javax.swing.JFrame {
         lblUserInfo = new javax.swing.JLabel();
         lblUsername = new javax.swing.JLabel();
         lblPassword = new javax.swing.JLabel();
-        btnHome = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
         lblPassword1 = new javax.swing.JLabel();
         txtPasswordCon = new javax.swing.JPasswordField();
         lblUsername1 = new javax.swing.JLabel();
@@ -77,10 +77,10 @@ public class AddUsers extends javax.swing.JFrame {
         lblPassword.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lblPassword.setText("Password");
 
-        btnHome.setText("Back");
-        btnHome.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnHomeActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 
@@ -117,7 +117,7 @@ public class AddUsers extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(44, 44, 44)
-                                .addComponent(btnHome)
+                                .addComponent(btnBack)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnCreate))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -179,7 +179,7 @@ public class AddUsers extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCreate)
-                    .addComponent(btnHome))
+                    .addComponent(btnBack))
                 .addGap(26, 26, 26))
         );
 
@@ -253,7 +253,7 @@ public class AddUsers extends javax.swing.JFrame {
         txtPasswordCon.setText("");
         txtEmail.setText("");
     }
-    private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         try {
             // TODO add your handling code here:
             this.dispose();
@@ -261,7 +261,7 @@ public class AddUsers extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnHomeActionPerformed
+    }//GEN-LAST:event_btnBackActionPerformed
 
     private void cmbDeptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbDeptActionPerformed
         // TODO add your handling code here:
@@ -300,8 +300,8 @@ public class AddUsers extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCreate;
-    private javax.swing.JButton btnHome;
     private javax.swing.JCheckBox chkAdmin;
     private static javax.swing.JComboBox<String> cmbDept;
     private javax.swing.JLabel lblPassword;
