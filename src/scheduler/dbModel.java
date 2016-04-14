@@ -68,19 +68,20 @@ public class dbModel {
         }
     }
 
-    public static void createEvent(String eventName, String eventDate, String eventTime, String eventPriority, boolean rescheduled, String creator) throws SQLException, ClassNotFoundException {
+    public static void createEvent(String eventName, String eventDescr, String eventDate, String eventTime, String eventPriority, boolean rescheduled, String creator) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
             conn = getConnection();
-            sql = "insert into event(eventName, eventDate, eventTime, eventPriority, rescheduled, creator) values(?,?,?,?,?,?)";
+            sql = "insert into event(eventName, eventDescription, eventDate, eventTime, eventPriority, rescheduled, creator) values(?,?,?,?,?,?,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, eventName);
-            stmt.setString(2, eventDate);
-            stmt.setString(3, eventTime);
-            stmt.setString(4, eventPriority);
-            stmt.setBoolean(5, rescheduled);
-            stmt.setString(6, creator);
+            stmt.setString(2, eventDescr);
+            stmt.setString(3, eventDate);
+            stmt.setString(4, eventTime);
+            stmt.setString(5, eventPriority);
+            stmt.setBoolean(6, rescheduled);
+            stmt.setString(7, creator);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -169,7 +170,7 @@ public class dbModel {
         ResultSet rs = null;
         try {
             conn = getConnection();
-            sql = "select eventName, eventDate, eventTime, eventPriority, rescheduled from Event e "
+            sql = "select eventName, eventDescription, eventDate, eventTime, eventPriority, rescheduled from Event e "
                     + "inner join userevent ue on e.eventId = ue.eventId "
                     + "inner join user u on ue.userId = u.userId"
                     + " where u.userId = ?";
@@ -178,12 +179,13 @@ public class dbModel {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String eventName = rs.getString("eventName");
+                String eventDescr = rs.getString("eventDescription");
                 String eventTime = rs.getString("eventTime");
                 String eventDate = rs.getString("eventDate");
                 String eventPriority = rs.getString("eventPriority");
                 boolean rescheduled = rs.getBoolean("rescheduled");
                 User creator = null; // should get the user
-                Event e = new Event(eventName, eventDate, eventTime, creator);
+                Event e = new Event(eventName, eventDescr, eventDate, eventTime, creator);
                 currUserEvents.add(e);
                 System.out.println("event "+eventName+" for user "+GUI._currentUser.getUsername());
             }
