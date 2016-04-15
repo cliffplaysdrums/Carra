@@ -54,6 +54,7 @@ public class dbModel {
             sql = "delete from user where username = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
+            stmt.executeUpdate();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -68,6 +69,7 @@ public class dbModel {
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, eventName);
             stmt.setString(2, eventTime);
+            stmt.executeUpdate();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -220,6 +222,24 @@ public class dbModel {
         }
     }
     
+    public static boolean findUser(String username) throws ClassNotFoundException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try{
+            conn = getConnection();
+            sql = "select username from user where username = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
     public static void authenticateUser(String username, String password){
         
     }
