@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS `scheduler`.`Event` ;
 CREATE TABLE IF NOT EXISTS `scheduler`.`Event` (
   `eventId` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `eventName` VARCHAR(45) NULL COMMENT '',
+  `eventDescription` VARCHAR(145) NULL COMMENT '',
   `eventDate` VARCHAR(45) NULL COMMENT '',
   `eventTime` VARCHAR(45) NULL COMMENT '',
   `eventPriority` VARCHAR(45) NULL COMMENT '',
