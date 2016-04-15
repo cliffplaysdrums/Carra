@@ -5,7 +5,10 @@
  */
 package scheduler;
 
+import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import static scheduler.GUI._currentUser;
@@ -129,8 +132,12 @@ public class ListEvents extends javax.swing.JFrame {
             for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
                 e = it.next();
                 if(e.getEventName().equals(other) && e.getEventDescription().equals(selected)){
-                    it.remove();
-                    // delete from db too
+                    try {
+                        it.remove();
+                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         } else {
@@ -138,12 +145,17 @@ public class ListEvents extends javax.swing.JFrame {
             for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
                 e = it.next();
                 if(e.getEventName().equals(selected) && e.getEventDescription().equals(other)){
-                    it.remove();
-                    // delete from db too
+                    try {
+                        it.remove();
+                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
         Serialize.saveUserFiles(Serialize._fileLocation);
+        listEvent();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
