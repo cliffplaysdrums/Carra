@@ -201,10 +201,10 @@ public class AddUsers extends javax.swing.JFrame {
         byte[] encryptedPassword = null;
         byte[] salt = null;
 
-        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
+        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
             User user = u.next();
-            if(user.getUsername().equals(username)){
-                JOptionPane.showMessageDialog(null, "This Username ("+username+") has been taken", "Username Error", JOptionPane.ERROR_MESSAGE);
+            if (user.getUsername().equals(username)) {
+                JOptionPane.showMessageDialog(null, "This Username (" + username + ") has been taken", "Username Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         if (!password.equals(confPassword)) {
@@ -220,25 +220,35 @@ public class AddUsers extends javax.swing.JFrame {
                 //TODO add error message here
             }
             if (_userDepartment != null) {
-                newUser = new User(username, encryptedPassword, salt, email);
-                ArrayList<User> departmentUsers = GUI._allDepts.get(_userDepartment);
-                if(departmentUsers == null) departmentUsers = new ArrayList<>();
-                departmentUsers.add(newUser);
-                GUI._allDepts.put(_userDepartment, departmentUsers);
-                if (chkAdmin.isSelected()) {
-                    newUser.makeAdmin(true);
-                }
-                GUI._userInfo.put(newUser, new ArrayList<>()); //newUser.isAdmin());
-                Serialize.saveUserFiles(Serialize._fileLocation);
                 try {
-                    dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
-                    dbModel.addUserDept(username, _userDepartment);
-                } catch (SQLException | ClassNotFoundException ex) {
+                    if (!dbModel.findUser(username)) {
+                        JOptionPane.showMessageDialog(null, "This Username (" + username + ") already exist in the database", "Username Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        newUser = new User(username, encryptedPassword, salt, email);
+                        try {
+                            dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
+                            dbModel.addUserDept(username, _userDepartment);
+                        } catch (SQLException | ClassNotFoundException ex) {
+                            Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        ArrayList<User> departmentUsers = GUI._allDepts.get(_userDepartment);
+                        if (departmentUsers == null) {
+                            departmentUsers = new ArrayList<>();
+                        }
+                        departmentUsers.add(newUser);
+                        GUI._allDepts.put(_userDepartment, departmentUsers);
+                        if (chkAdmin.isSelected()) {
+                            newUser.makeAdmin(true);
+                        }
+                        GUI._userInfo.put(newUser, new ArrayList<>()); //newUser.isAdmin());
+                        Serialize.saveUserFiles(Serialize._fileLocation);
+                        JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
+                        repaint();
+                        clearText();
+                    }
+                } catch (ClassNotFoundException ex) {
                     Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
-                repaint();
-                clearText();
             } else {
                 JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);
             }
@@ -246,7 +256,6 @@ public class AddUsers extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCreateActionPerformed
 
-    
     private void clearText() {
         txtUsername.setText("");
         txtPassword.setText("");
