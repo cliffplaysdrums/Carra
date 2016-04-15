@@ -18,7 +18,9 @@ import static scheduler.GUI._userInfo;
 public class ListEvents extends javax.swing.JFrame {
 
     static String[] lister = {"Event Name", "Event Description"};
-    static DefaultTableModel _listerModel = new DefaultTableModel(lister, GUI._eventCount);;
+    static DefaultTableModel _listerModel = new DefaultTableModel(lister, GUI._eventCount);
+
+    ;
 
     /**
      * Creates new form ListEvents
@@ -32,15 +34,15 @@ public class ListEvents extends javax.swing.JFrame {
         tblListEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listEvent();
     }
-    
-    private void listEvent(){
+
+    private void listEvent() {
         int i = 0;
-            for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
-                Event e = it.next();
-                ListEvents._listerModel.setValueAt(e.getEventName(), i, 0);
-                ListEvents._listerModel.setValueAt(e.getEventDescription(), i, 1);
-                i++;
-            }
+        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+            Event e = it.next();
+            ListEvents._listerModel.setValueAt(e.getEventName(), i, 0);
+            ListEvents._listerModel.setValueAt(e.getEventDescription(), i, 1);
+            i++;
+        }
     }
 
     /**
@@ -116,7 +118,32 @@ public class ListEvents extends javax.swing.JFrame {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        
+        System.err.println("I'm here");
+        int row = tblListEvents.getSelectedRow();
+        int column = tblListEvents.getSelectedColumn();
+        Object selected = _listerModel.getValueAt(row, column).toString();
+        Object other = null;
+        Event e = null;
+        if (column > 0) {
+            other = _listerModel.getValueAt(row, 0).toString();
+            for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+                e = it.next();
+                if(e.getEventName().equals(other) && e.getEventDescription().equals(selected)){
+                    it.remove();
+                    // delete from db too
+                }
+            }
+        } else {
+            other = _listerModel.getValueAt(row, 1).toString();
+            for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+                e = it.next();
+                if(e.getEventName().equals(selected) && e.getEventDescription().equals(other)){
+                    it.remove();
+                    // delete from db too
+                }
+            }
+        }
+        Serialize.saveUserFiles(Serialize._fileLocation);
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**

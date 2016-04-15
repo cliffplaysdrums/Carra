@@ -110,7 +110,7 @@ public class RemoveUser extends javax.swing.JFrame {
                 int reply = JOptionPane.showConfirmDialog(null, "Are you Sure?", "Delete "+user.getUsername(), JOptionPane.YES_NO_CANCEL_OPTION);
                 if(reply == JOptionPane.YES_OPTION){
                     try {
-                        dbModel.removeUser(username);
+                        dbModel.removeUser(username); // not working
                         u.remove();
                         JOptionPane.showMessageDialog(null, user+" Deleted");
                         Serialize.saveUserFiles(Serialize._fileLocation);

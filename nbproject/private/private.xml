@@ -3,17 +3,20 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/AddUsers.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Event.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/CreateEvent.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/RemoveUser.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Serialize.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/EventNotification.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/dbModel.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/ListEvents.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/AddUsers.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Logon.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/EditUser.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/User.java</file>
-            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/RemoveUser.java</file>
-            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Serialize.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Encryption.java</file>
-            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/dbModel.java</file>
             <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/GUI.java</file>
+            <file>file:/C:/Users/Ayomitunde/Documents/NetBeansProjects/Scheduler/src/scheduler/Notification.java</file>
         </group>
     </open-files>
 </project-private>
