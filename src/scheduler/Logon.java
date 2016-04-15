@@ -158,7 +158,6 @@ public class Logon extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        Encryption encrypt = new Encryption();
         _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
@@ -181,35 +180,11 @@ public class Logon extends javax.swing.JFrame {
                             }
                         }
                     }
-                } else {
-                    // should only come here if db is not up to date with user... so insert user into db ?
-                    for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-                        User user = u.next();
-                        try {
-                            if (user.getUsername().equals(_loginUsername)) {
-                                if (encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
-                                    valid = true;
-                                    user.setLogged(true);
-                                    JOptionPane.showMessageDialog(null, "Successful");
-                                    try {
-                                        this.dispose();
-                                        new GUI().setVisible(true);
-                                    } catch (IOException ex) {
-                                        Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                            }
-                        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-                            Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
                 }
                 if (valid == false) {
                     JOptionPane.showMessageDialog(null, "Could not locate User", "Invalid User", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SQLException ex) {
+            } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

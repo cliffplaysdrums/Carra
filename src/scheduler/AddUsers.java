@@ -201,12 +201,6 @@ public class AddUsers extends javax.swing.JFrame {
         byte[] encryptedPassword = null;
         byte[] salt = null;
 
-//        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-//            User user = u.next();
-//            if (user.getUsername().equals(username)) {
-//                JOptionPane.showMessageDialog(null, "This Username (" + username + ") has been taken", "Username Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
         if (!password.equals(confPassword)) {
             JOptionPane.showMessageDialog(null, "Password did not match", "Password Mismatch", JOptionPane.ERROR_MESSAGE);
         } else if (isvalidated == false) {
@@ -220,7 +214,7 @@ public class AddUsers extends javax.swing.JFrame {
                 } catch (java.security.NoSuchAlgorithmException | java.security.spec.InvalidKeySpecException e) {
                     //TODO add error message here
                 }
-                if (_userDepartment != null || !dbModel.findUser(username)) {
+                if (_userDepartment != null || dbModel.findUser(username) == false) {
                     newUser = new User(username, encryptedPassword, salt, email);
                     try {
                         dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
@@ -243,7 +237,7 @@ public class AddUsers extends javax.swing.JFrame {
                     repaint();
                     clearText();
                 } else {
-                    if (dbModel.findUser(username)) {
+                    if (dbModel.findUser(username) == true) {
                         JOptionPane.showMessageDialog(null, "This Username (" + username + ") already exist in the database", "Username Error", JOptionPane.ERROR_MESSAGE);
                     }else{
                         JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);

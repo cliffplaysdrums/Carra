@@ -1,9 +1,11 @@
 package scheduler;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -52,6 +54,7 @@ public class EditUser extends javax.swing.JFrame {
         tblEditUser = new javax.swing.JTable();
         btnEdit = new javax.swing.JButton();
         btnHome = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,6 +102,13 @@ public class EditUser extends javax.swing.JFrame {
             }
         });
 
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -124,7 +134,9 @@ public class EditUser extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnHome)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnEdit)))
+                        .addComponent(btnEdit)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -143,7 +155,8 @@ public class EditUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit)
-                    .addComponent(btnHome))
+                    .addComponent(btnHome)
+                    .addComponent(btnDelete))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
@@ -153,11 +166,13 @@ public class EditUser extends javax.swing.JFrame {
 
     // Iterate through list of users and display username and if they are an admin or not
     private void listUsers() {
-        _dtm.setRowCount(0);
-        for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-            User user = u.next();
-            _dtm.addRow(new Object[]{user.getUsername(), user.isAdmin()});
+        try {
+            _dtm.setRowCount(0);
+            dbModel.showList();
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
         }
+       
     }
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
@@ -192,17 +207,27 @@ public class EditUser extends javax.swing.JFrame {
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         // TODO add your handling code here:
         int row = tblEditUser.getSelectedRow();
-        int column = tblEditUser.getSelectedColumn();
-        Object newvalue = _dtm.getValueAt(row, column);
-        String nvalue = String.valueOf(newvalue);
-        if ("true".equals(nvalue) || "false".equals(nvalue)) {
-            if ("true".equals(nvalue)) {
+        Object newvalue = _dtm.getValueAt(row, 1);
+        String username = _dtm.getValueAt(row, 0).toString();
+        String isAdmin = String.valueOf(newvalue).toLowerCase();
+        if ("true".equals(isAdmin) || "false".equals(isAdmin)) {
+            if ("true".equals(isAdmin)) {
                 _edit.makeAdmin(true);
+                try {
+                    dbModel.makeAdmin(username, true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
+                try {
+                    dbModel.makeAdmin(username, false);
+                } catch (SQLException ex) {
+                    Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 _edit.makeAdmin(false);
             }
         } else {
-            _edit.setUsername(nvalue);
+            _edit.setUsername(isAdmin);
         }
         Serialize.saveUserFiles(Serialize._fileLocation);
     }//GEN-LAST:event_btnEditActionPerformed
@@ -216,6 +241,31 @@ public class EditUser extends javax.swing.JFrame {
             Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnHomeActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        int row = tblEditUser.getSelectedRow();
+        String username = _dtm.getValueAt(row, 0).toString();
+        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
+            User user = u.next();
+            if(user.getUsername().equals(username)){
+                int reply = JOptionPane.showConfirmDialog(null, "Are you Sure?", "Delete "+user.getUsername(), JOptionPane.YES_NO_CANCEL_OPTION);
+                if(reply == JOptionPane.YES_OPTION){
+                    try {
+                        dbModel.removeUser(username); // not working
+                        u.remove();
+                        JOptionPane.showMessageDialog(null, user+" Deleted");
+                        Serialize.saveUserFiles(Serialize._fileLocation);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
+                    } 
+                }else{
+                    JOptionPane.showMessageDialog(null, "Canceled");
+                }
+            }
+        }
+        
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     public static void run() {
         try {
@@ -239,6 +289,7 @@ public class EditUser extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnHome;
     private javax.swing.JButton btnSearch;

@@ -21,9 +21,8 @@ import static scheduler.GUI._userInfo;
 public class ListEvents extends javax.swing.JFrame {
 
     static String[] lister = {"Event Name", "Event Description"};
-    static DefaultTableModel _listerModel = new DefaultTableModel(lister, GUI._eventCount);
-
-    ;
+    static int _eventCount = _userInfo.get(_currentUser).size();
+    static DefaultTableModel _listerModel = new DefaultTableModel(lister, _eventCount);
 
     /**
      * Creates new form ListEvents
@@ -45,6 +44,13 @@ public class ListEvents extends javax.swing.JFrame {
             ListEvents._listerModel.setValueAt(e.getEventName(), i, 0);
             ListEvents._listerModel.setValueAt(e.getEventDescription(), i, 1);
             i++;
+        }
+    }
+
+    private void clear() {
+        for (int i = 0; i < _listerModel.getRowCount(); i++) {
+            _listerModel.setValueAt(null, i, 0);
+            _listerModel.setValueAt(null, i, 1);
         }
     }
 
@@ -121,41 +127,44 @@ public class ListEvents extends javax.swing.JFrame {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        System.err.println("I'm here");
         int row = tblListEvents.getSelectedRow();
         int column = tblListEvents.getSelectedColumn();
-        Object selected = _listerModel.getValueAt(row, column).toString();
-        Object other = null;
-        Event e = null;
-        if (column > 0) {
-            other = _listerModel.getValueAt(row, 0).toString();
-            for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
-                e = it.next();
-                if(e.getEventName().equals(other) && e.getEventDescription().equals(selected)){
-                    try {
-                        it.remove();
-                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
+        if (_listerModel.getValueAt(row, column) != null) {
+            Object selected = _listerModel.getValueAt(row, column).toString();
+            Object other = null;
+            Event e = null;
+            if (column > 0) {
+                other = _listerModel.getValueAt(row, 0).toString();
+                for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+                    e = it.next();
+                    if (e.getEventName().equals(other) && e.getEventDescription().equals(selected)) {
+                        try {
+                            it.remove();
+                            dbModel.deleteEvent(e.getEventName(), e.getEventTime());
+                        } catch (SQLException ex) {
+                            Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            } else {
+                other = _listerModel.getValueAt(row, 1).toString();
+                for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+                    e = it.next();
+                    if (e.getEventName().equals(selected) && e.getEventDescription().equals(other)) {
+                        try {
+                            it.remove();
+                            dbModel.deleteEvent(e.getEventName(), e.getEventTime());
+                        } catch (SQLException ex) {
+                            Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
             }
-        } else {
-            other = _listerModel.getValueAt(row, 1).toString();
-            for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
-                e = it.next();
-                if(e.getEventName().equals(selected) && e.getEventDescription().equals(other)){
-                    try {
-                        it.remove();
-                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
-                    } catch (SQLException ex) {
-                        Logger.getLogger(ListEvents.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
+            Serialize.saveUserFiles(Serialize._fileLocation);
+            clear();
+            listEvent();
         }
-        Serialize.saveUserFiles(Serialize._fileLocation);
-        listEvent();
+
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
