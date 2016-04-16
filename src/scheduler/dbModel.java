@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static scheduler.EditUser._dtm;
 
 /**
  *
@@ -25,6 +26,7 @@ public class dbModel {
     public static void insertUser(String username, String password, String email, String dept, boolean isAdmin) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement stmt = null;
+        password = Encryption.getMD5(password);
         try {
             conn = getConnection();
             sql = "insert into user(username, password, email, isAdmin) values(?, ?, ?, ?)";
@@ -44,6 +46,68 @@ public class dbModel {
 
         }
     }
+    
+    public static void removeUser(String username) throws SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try{
+            conn = getConnection();
+            sql = "delete from user where username = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            stmt.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void deleteEvent(String eventName, String eventTime) throws SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try{
+            conn = getConnection();
+            sql = "delete from event where eventName = ? and eventTime = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, eventName);
+            stmt.setString(2, eventTime);
+            stmt.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static boolean logUser(String user, String pass) throws ClassNotFoundException, SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String username = null;
+        String password = null;
+        pass = Encryption.getMD5(pass);
+        try {
+            conn = getConnection();
+            sql = "select username, password from user where username = ? and password = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, user);
+            stmt.setString(2, pass);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                username = rs.getString("username");
+                password = rs.getString("password");
+                if(username != null && password != null){
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (stmt != null && conn != null) {
+                stmt.close();
+                conn.close();
+            }
+        }
+        return false;
+    }
+    
     
     public static void addUserDept(String username, String dept) throws ClassNotFoundException, SQLException{
         Connection conn = null;
@@ -67,6 +131,7 @@ public class dbModel {
 
         }
     }
+
 
     public static void createEvent(String eventName, String eventDescr, String eventDate, String eventTime, String eventPriority, boolean rescheduled, String creator) throws SQLException, ClassNotFoundException {
         Connection conn = null;
@@ -92,6 +157,21 @@ public class dbModel {
             }
         }
 
+    }
+    
+    public static void makeAdmin(String username, boolean bool) throws SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try{
+            conn = getConnection();
+            sql = "update user set isAdmin = ? where username = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setBoolean(1, bool);
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static int findId(String name, String query) throws ClassNotFoundException, SQLException {
@@ -158,6 +238,53 @@ public class dbModel {
         }
     }
     
+    public static void showList() throws ClassNotFoundException, SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String username = null;
+        Boolean isAdmin = null;
+        try {
+            conn = getConnection();
+            sql = "select username, isAdmin from user";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                username = rs.getString("username");
+                isAdmin = rs.getBoolean("isAdmin");
+                _dtm.addRow(new Object[]{username, isAdmin});
+                CreateEvent._userModel.setValueAt(username, CreateEvent._rowCounter, 0);
+                CreateEvent._rowCounter++;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (stmt != null && conn != null) {
+                stmt.close();
+                conn.close();
+            }
+        }
+    }
+    
+    public static boolean findUser(String username) throws ClassNotFoundException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean foundUser = false;
+        try{
+            conn = getConnection();
+            sql = "select username from user where username = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                foundUser = true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return foundUser;
+    }
     public static void authenticateUser(String username, String password){
         
     }
@@ -187,7 +314,6 @@ public class dbModel {
                 User creator = null; // should get the user
                 Event e = new Event(eventName, eventDescr, eventDate, eventTime, creator);
                 currUserEvents.add(e);
-                System.out.println("event "+eventName+" for user "+GUI._currentUser.getUsername());
             }
             GUI._userInfo.put(GUI._currentUser, currUserEvents);
         } catch (SQLException ex) {
@@ -234,5 +360,4 @@ public class dbModel {
         }
         return conn;
     }
-
 }

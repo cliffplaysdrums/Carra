@@ -50,7 +50,7 @@ public class User implements Serializable{
     }
     
     public boolean getLogged(){
-        return logged;
+        return this.logged;
     }
     
     public void setCustomecolor(Color color ){
@@ -69,7 +69,7 @@ public class User implements Serializable{
     }
     
     public void setLogged(boolean t){
-        logged = t;
+        this.logged = t;
     }
     
     public void makeAdmin(boolean bool){

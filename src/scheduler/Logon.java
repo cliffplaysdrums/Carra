@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,9 +27,11 @@ public class Logon extends javax.swing.JFrame {
      * @throws java.io.IOException
      */
     File _testLog;
-
+    static String _loginUsername = null;
+    
     public Logon() throws IOException {
         initComponents();
+        GUI._currentUser = null;
         this.getRootPane().setDefaultButton(btnLogin);
         _testLog = new File(Serialize._fileLocation);
         Serialize.OpenUserFiles(_testLog);
@@ -155,24 +158,21 @@ public class Logon extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        reset();
-        Encryption encrypt = new Encryption();
-        String _loginUsername = txtUsername.getText();
+        _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
         boolean valid = false;
 
         if ("".equals(_loginUsername) || "".equals(password)) {
             JOptionPane.showMessageDialog(null, "Please Input a Username and Password", "Input Required", JOptionPane.ERROR_MESSAGE);
         } else {
-            for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-                User user = u.next();
-                try {
-                    if (user.getUsername().equals(_loginUsername)) {
-                        if (encrypt.authenticate(password, user.getPassword(), user.getSalt())) {
-                            valid = true;
+            try {
+                if (dbModel.logUser(_loginUsername, password)) {
+                    for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
+                        User user = u.next();
+                        if (user.getUsername().equals(_loginUsername)) {
                             user.setLogged(true);
-                            JOptionPane.showMessageDialog(null, "Successful");
                             try {
+                                valid = true;
                                 this.dispose();
                                 new GUI().setVisible(true);
                             } catch (IOException ex) {
@@ -180,23 +180,17 @@ public class Logon extends javax.swing.JFrame {
                             }
                         }
                     }
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-                    Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
-            if (valid == false) {
-                JOptionPane.showMessageDialog(null, "Could not locate User", "Invalid User", JOptionPane.ERROR_MESSAGE);
+                if (valid == false) {
+                    JOptionPane.showMessageDialog(null, "Could not locate User", "Invalid User", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
     }//GEN-LAST:event_btnLoginActionPerformed
 
-    private void reset(){
-        for(Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();){
-            User user = u.next();
-            user.setLogged(false);
-        }
-    }
     private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
         // TODO add your handling code here:
         this.dispose();

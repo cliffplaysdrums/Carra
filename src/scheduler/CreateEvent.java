@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +31,7 @@ public class CreateEvent extends javax.swing.JFrame {
     static DefaultTableModel _userModel = new DefaultTableModel(users, 100);
     Event newEvent;
     static int _rowCounter = 0;
+    
 
     /**
      * Creates new form CreateEvent
@@ -37,6 +39,7 @@ public class CreateEvent extends javax.swing.JFrame {
     public CreateEvent() {
         initComponents();
         showUsers();
+        
     }
 
     /**
@@ -190,7 +193,10 @@ public class CreateEvent extends javax.swing.JFrame {
     private void btnCreateEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateEventActionPerformed
         // TODO add your handling code here:
         String eventName = txtEventName.getText();
-        String eventDescr = txtEventDescr.getText();
+        if("".equals(eventName)){
+            JOptionPane.showMessageDialog(null, "Please add an event name", "NAME ERROR", JOptionPane.ERROR_MESSAGE);
+        }else{
+            String eventDescr = txtEventDescr.getText();
         Date eventDate = jdpDateSelector.getDate();
         String time = jspTimeSelector.getValue().toString();
         User creator = GUI._currentUser;
@@ -237,12 +243,14 @@ public class CreateEvent extends javax.swing.JFrame {
             Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
         getSelectedUsers();
+        ListEvents._eventCount++;
         Serialize.saveUserFiles(Serialize._fileLocation);
-        //Serialize.saveServerFile(Serialize._serverFile);
         String currentDate = GUI._df.format(GUI._currentDate);
         GUI.updateUpcoming(currentDate);
         GUI.refreshCalendar(GUI._realMonth, GUI._realYear);
         this.setVisible(false);
+        }
+        
     }//GEN-LAST:event_btnCreateEventActionPerformed
 
     public boolean deptState() {
