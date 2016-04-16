@@ -925,12 +925,6 @@ public class GUI extends javax.swing.JFrame {
             lowerPanel.add(new javax.swing.JSeparator(
                     javax.swing.SwingConstants.VERTICAL), c);
 
-            //event
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 2;
-            c.gridwidth = 3;
-            c.weightx = 1;
-
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
             c.gridx = 0;
@@ -955,7 +949,7 @@ public class GUI extends javax.swing.JFrame {
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
             if (e.getEventDate().equals(dateSelected)) {
-                javax.swing.JButton btnDeleteEvent = new javax.swing.JButton("Delete");
+                /*javax.swing.JButton btnDeleteEvent = new javax.swing.JButton("Delete");
                 btnDeleteEvent.setBackground(btnUCreateEvent.getBackground());
                 btnDeleteEvent.setForeground(btnUCreateEvent.getForeground());
                 btnDeleteEvent.setFont(btnUCreateEvent.getFont());
@@ -968,6 +962,7 @@ public class GUI extends javax.swing.JFrame {
                         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
+                */
 
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
@@ -977,10 +972,11 @@ public class GUI extends javax.swing.JFrame {
                 if (min >= 30) {
                     c.gridy++;
                 }
-                c.gridx = 4;
+                c.gridx = GridBagConstraints.RELATIVE;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
-                c.gridx = 5;
+                /*c.gridx = 5;
                 lowerPanel.add(btnDeleteEvent, c);
+                */
             }
         }
 
