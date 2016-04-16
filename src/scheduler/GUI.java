@@ -83,6 +83,7 @@ public class GUI extends javax.swing.JFrame {
     boolean showOneEvent = false;
     static int _eventCount = 0;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
+    static HashMap<String, Double> _dueEvent = new HashMap<>();
 
     static int counter = 0;
 
@@ -109,7 +110,7 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         };
-        Timer checkEvUp = new Timer(300000, showEventsUp);
+        Timer checkEvUp = new Timer(10000, showEventsUp);
         checkEvUp.start();
     }
 
@@ -161,10 +162,8 @@ public class GUI extends javax.swing.JFrame {
         mnuUser = new javax.swing.JMenu();
         mnuAddUser = new javax.swing.JMenuItem();
         mnuListEditUser = new javax.swing.JMenuItem();
-        mnuRemoveUser = new javax.swing.JMenuItem();
         mnuEditPassword = new javax.swing.JMenuItem();
         mnuCustomizeCalendar = new javax.swing.JMenuItem();
-        mnuServerLocation = new javax.swing.JMenuItem();
 
         jMenuItem4.setText("jMenuItem4");
 
@@ -376,6 +375,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        mnuAddUser.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
         mnuAddUser.setText("Add User");
         mnuAddUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -391,14 +391,6 @@ public class GUI extends javax.swing.JFrame {
             }
         });
         mnuUser.add(mnuListEditUser);
-
-        mnuRemoveUser.setText("Remove User");
-        mnuRemoveUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuRemoveUserActionPerformed(evt);
-            }
-        });
-        mnuUser.add(mnuRemoveUser);
 
         mnuEditPassword.setText("Edit Password");
         mnuEditPassword.addActionListener(new java.awt.event.ActionListener() {
@@ -417,14 +409,6 @@ public class GUI extends javax.swing.JFrame {
         mnuUser.add(mnuCustomizeCalendar);
 
         mnuMainEdit.add(mnuUser);
-
-        mnuServerLocation.setText("Server Location");
-        mnuServerLocation.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuServerLocationActionPerformed(evt);
-            }
-        });
-        mnuMainEdit.add(mnuServerLocation);
 
         jMenuBar1.add(mnuMainEdit);
 
@@ -549,8 +533,6 @@ public class GUI extends javax.swing.JFrame {
     private void hideNonAdmin() {
         mnuAddUser.setVisible(false);
         mnuListEditUser.setVisible(false);
-        mnuRemoveUser.setVisible(false);
-        mnuServerLocation.setVisible(false);
     }
 
     // logout redirects user to login page
@@ -566,12 +548,6 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 
-    private void mnuRemoveUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuRemoveUserActionPerformed
-        // TODO add your handling code here:
-        this.setVisible(false);
-        RemoveUser.run();
-    }//GEN-LAST:event_mnuRemoveUserActionPerformed
-
     private void mnuListEditUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuListEditUserActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
@@ -581,10 +557,6 @@ public class GUI extends javax.swing.JFrame {
     private void mnuUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuUserActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_mnuUserActionPerformed
-
-    private void mnuServerLocationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuServerLocationActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mnuServerLocationActionPerformed
 
     // refreshes the calendar whenever the year is changed
     private void cmbYearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbYearActionPerformed
@@ -707,35 +679,39 @@ public class GUI extends javax.swing.JFrame {
             } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            refreshCalendar(_currentMonth, _currentYear);
+            String currentDate = _df.format(_currentDate);
+            updateUpcoming(currentDate);
         }
-        if (showOneEvent == false) {
-            if (showEvent()) {
-                EventNotification.run();
-            }
-            showOneEvent = !showOneEvent;
-        }
-        refreshCalendar(_currentMonth, _currentYear);
-        String currentDate = _df.format(_currentDate);
-        updateUpcoming(currentDate);
     }
 
     private boolean showEvent() {
         int i = 0;
         boolean eventExist = false;
-        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
+        for (Iterator<Event> it = _upcomingEvents.iterator(); it.hasNext();) {
             Event e = it.next();
             String currDate = _df.format(_currentDate);
             if (currDate.equals(e.getEventDate())) {
                 String time = LocalTime.now().toString();
                 time = time.substring(0, time.lastIndexOf("."));
                 int timeDue = calcTime(e.getEventTime()) - calcTime(time);
-                System.out.println("curr time " + time + " even time " + e.getEventTime() + " time diff " + timeDue);
+                //System.out.println("curr time " + time + " even time " + e.getEventTime() + " time diff " + timeDue);
                 String tD = timeDue > 1 ? String.valueOf(timeDue) + " minutes" : String.valueOf(timeDue) + " minute";
                 if (timeDue >= 0 && timeDue <= 15) {
-                    eventExist = true;
-                    EventNotification._upcomingEventsModel.setValueAt(e.getEventDescription(), i, 0);
-                    EventNotification._upcomingEventsModel.setValueAt(tD, i, 1);
-                    i++;
+                    if (!_dueEvent.containsKey(e.getEventName()) || _dueEvent.get(e.getEventName()) <= 0) {
+                        _dueEvent.put(e.getEventName(), 5.0); // show again in 5 minutes
+                        eventExist = true;
+                        EventNotification._upcomingEventsModel.setValueAt(e.getEventDescription(), i, 0);
+                        EventNotification._upcomingEventsModel.setValueAt(tD, i, 1);
+                        i++;
+                    } else// reduce time until it shows again
+                    {
+                        if (timeDue == 0) {
+                            _dueEvent.remove(e.getEventName());
+                        } else {
+                            _dueEvent.put(e.getEventName(), (_dueEvent.get(e.getEventName()) - 0.5));
+                        }
+                    }
                 }
             }
         }
@@ -998,7 +974,9 @@ public class GUI extends javax.swing.JFrame {
                 int min = Integer.parseInt(time[1]);
 
                 c.gridy = (hour + 1) * 2;
-                if (min >= 30) c.gridy++;
+                if (min >= 30) {
+                    c.gridy++;
+                }
                 c.gridx = 4;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
                 c.gridx = 5;
@@ -1073,7 +1051,7 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         // first set count dynamically.. sorta
         _eventCount = _userInfo.get(_currentUser).size();
-       ListEvents.run();
+        ListEvents.run();
 
     }//GEN-LAST:event_btnListEventsActionPerformed
 
@@ -1143,8 +1121,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuExit;
     private javax.swing.JMenuItem mnuListEditUser;
     private javax.swing.JMenu mnuMainEdit;
-    private javax.swing.JMenuItem mnuRemoveUser;
-    private javax.swing.JMenuItem mnuServerLocation;
     private javax.swing.JMenu mnuUser;
     private javax.swing.JPanel pnlBackground;
     private static javax.swing.JTable tblCalendar;
