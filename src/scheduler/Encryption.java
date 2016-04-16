@@ -23,6 +23,8 @@ package scheduler;
  *
  * @author Cliff
  */
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -67,4 +69,19 @@ public class Encryption {
         
         return salt;
     }
+    
+    public static String getMD5(String input){
+		try{
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(input.getBytes());
+			BigInteger number = new BigInteger(1, messageDigest);
+			String hash = number.toString(16);
+			while(hash.length() < 32){
+				hash = "0" + hash;
+			}
+			return hash;
+		}catch(NoSuchAlgorithmException e){
+			throw new RuntimeException(e);
+		}
+	}
 }
