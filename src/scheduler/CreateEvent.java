@@ -243,7 +243,6 @@ public class CreateEvent extends javax.swing.JFrame {
             Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
         getSelectedUsers();
-        ListEvents._eventCount++;
         Serialize.saveUserFiles(Serialize._fileLocation);
         String currentDate = GUI._df.format(GUI._currentDate);
         GUI.updateUpcoming(currentDate);

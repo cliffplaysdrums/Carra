@@ -20,13 +20,11 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JColorChooser;
@@ -74,14 +72,13 @@ public class GUI extends javax.swing.JFrame {
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
     static HashMap<String, ArrayList> _allDepts = new HashMap<>();
     static String _eventday;
-    static User _currentUser = null;
+    static User _currentUser;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
     private final ActionListener showEventsUp;
     static boolean dateClicked = false;
     boolean showOneEvent = false;
-    static int _eventCount = 0;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
     static HashMap<String, Double> _dueEvent = new HashMap<>();
 
@@ -94,6 +91,7 @@ public class GUI extends javax.swing.JFrame {
         _realYear = _calendar.get(GregorianCalendar.YEAR);
         _currentMonth = _realMonth;
         _currentYear = _realYear;
+        _currentUser = null;
         initComponents();
         set();
         updateCalendar = (ActionEvent e) -> {
@@ -1050,7 +1048,6 @@ public class GUI extends javax.swing.JFrame {
     private void btnListEventsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListEventsActionPerformed
         // TODO add your handling code here:
         // first set count dynamically.. sorta
-        _eventCount = _userInfo.get(_currentUser).size();
         ListEvents.run();
 
     }//GEN-LAST:event_btnListEventsActionPerformed
