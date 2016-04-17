@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +27,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JColorChooser;
@@ -74,14 +74,13 @@ public class GUI extends javax.swing.JFrame {
     static HashMap<User, ArrayList> _userInfo = new HashMap<>();
     static HashMap<String, ArrayList> _allDepts = new HashMap<>();
     static String _eventday;
-    static User _currentUser = null;
+    static User _currentUser;
     static DateFormat _df = new SimpleDateFormat("M/dd/yyyy");
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
     private final ActionListener showEventsUp;
     static boolean dateClicked = false;
     boolean showOneEvent = false;
-    static int _eventCount = 0;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
     static HashMap<String, Double> _dueEvent = new HashMap<>();
 
@@ -94,6 +93,7 @@ public class GUI extends javax.swing.JFrame {
         _realYear = _calendar.get(GregorianCalendar.YEAR);
         _currentMonth = _realMonth;
         _currentYear = _realYear;
+        _currentUser = null;
         initComponents();
         set();
         updateCalendar = (ActionEvent e) -> {
@@ -440,9 +440,7 @@ public class GUI extends javax.swing.JFrame {
 
 
     private void mnuAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuAddUserActionPerformed
-        this.setVisible(false);
-        AddUsers.run();
-
+    AddUsers.run();
     }//GEN-LAST:event_mnuAddUserActionPerformed
 
     private void set() {
@@ -833,7 +831,10 @@ public class GUI extends javax.swing.JFrame {
         int col = tblCalendar.getSelectedColumn();
         int daySelected = row * 7 + col + 1 - offset;
         String dayS = daySelected < 10 ? "0" + String.valueOf(daySelected) : String.valueOf(daySelected);
-        String dateSelected = (_currentMonth + 1) + "/" + dayS + "/" + _currentYear;
+        int cMonth = _currentMonth+1;
+        String dateSelected_noZero = cMonth + "/" + daySelected + "/" + _currentYear;
+        String currMonth = cMonth < 10 ? "0"+String.valueOf(cMonth) : String.valueOf(cMonth);
+        String dateSelected = currMonth + "/" + dayS + "/" + _currentYear;
 
         //add some layout components
         dateGUI = new javax.swing.JPanel(new GridBagLayout());
@@ -842,8 +843,8 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
-        int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+        //int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+        //int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
         //jScrollPane1.setVerticalScrollBarPolicy(never);
         //scroll.setVerticalScrollBarPolicy(always);
         scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height));
@@ -945,25 +946,11 @@ public class GUI extends javax.swing.JFrame {
         c.gridwidth = 3;
         c.weightx = 1;
         //add event descriptions and delete buttons
+        Event last = null;
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
-            if (e.getEventDate().equals(dateSelected)) {
-                /*javax.swing.JButton btnDeleteEvent = new javax.swing.JButton("Delete");
-                btnDeleteEvent.setBackground(btnUCreateEvent.getBackground());
-                btnDeleteEvent.setForeground(btnUCreateEvent.getForeground());
-                btnDeleteEvent.setFont(btnUCreateEvent.getFont());
-                btnDeleteEvent.addActionListener((java.awt.event.ActionEvent evt) -> {
-                    try {
-                        //delete event code here.. using name and time so it has to be exact event.. have to remove from all other users too
-                        dbModel.deleteEvent(e.getEventName(), e.getEventTime());
-                        deleteEvent(e.getEventName(), e.getEventTime());
-                    } catch (SQLException ex) {
-                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                });
-                */
-
+            if (e.getEventDate().equals(dateSelected_noZero)) {
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
@@ -974,9 +961,6 @@ public class GUI extends javax.swing.JFrame {
                 }
                 c.gridx = GridBagConstraints.RELATIVE;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
-                /*c.gridx = 5;
-                lowerPanel.add(btnDeleteEvent, c);
-                */
             }
         }
 
@@ -989,22 +973,25 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
+        
+        scroll.getVerticalScrollBar().setUnitIncrement(12);
 
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
         });
 
-        btnCreateEvent.addActionListener(this::btnUCreateEventActionPerformed);
+        btnCreateEvent.addActionListener((java.awt.event.ActionEvent e) -> {
+            try {
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                Date date = (Date) df.parse(dateSelected);
+                CreateEvent.run();
+                //CreateEvent.jdpDateSelector.setDate(date); think about this later.
+            } catch (ParseException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
-    private void deleteEvent(String eventName, String eventTime) {
-        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
-            Event e = it.next();
-            if (e.getEventName().equals(eventName) && e.getEventTime().equals(eventTime)) {
-                it.remove();
-            }
-        }
-    }
     private void mnuEditPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuEditPasswordActionPerformed
         // TODO add your handling code here:
         String newPassword = JOptionPane.showInputDialog("Enter new password here");
@@ -1046,7 +1033,6 @@ public class GUI extends javax.swing.JFrame {
     private void btnListEventsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListEventsActionPerformed
         // TODO add your handling code here:
         // first set count dynamically.. sorta
-        _eventCount = _userInfo.get(_currentUser).size();
         ListEvents.run();
 
     }//GEN-LAST:event_btnListEventsActionPerformed
