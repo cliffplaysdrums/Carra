@@ -926,12 +926,6 @@ public class GUI extends javax.swing.JFrame {
             lowerPanel.add(new javax.swing.JSeparator(
                     javax.swing.SwingConstants.VERTICAL), c);
 
-            //event
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 2;
-            c.gridwidth = 3;
-            c.weightx = 1;
-
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
             c.gridx = 0;
@@ -956,11 +950,7 @@ public class GUI extends javax.swing.JFrame {
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
-            System.out.println("event");
-            System.out.println(e.getEventDate());
-            System.out.println(dateSelected);
             if (e.getEventDate().equals(dateSelected_noZero)) {
-                System.out.println("match");
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);

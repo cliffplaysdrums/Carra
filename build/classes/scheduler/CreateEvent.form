@@ -121,9 +121,12 @@
       </Events>
     </Component>
     <Component class="org.jdesktop.swingx.JXDatePicker" name="jdpDateSelector">
+<<<<<<< HEAD
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
       </AuxValues>
+=======
+>>>>>>> master
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
