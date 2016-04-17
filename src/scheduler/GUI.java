@@ -832,6 +832,7 @@ public class GUI extends javax.swing.JFrame {
         int daySelected = row * 7 + col + 1 - offset;
         String dayS = daySelected < 10 ? "0" + String.valueOf(daySelected) : String.valueOf(daySelected);
         int cMonth = _currentMonth+1;
+        String dateSelected_noZero = cMonth + "/" + daySelected + "/" + _currentYear;
         String currMonth = cMonth < 10 ? "0"+String.valueOf(cMonth) : String.valueOf(cMonth);
         String dateSelected = currMonth + "/" + dayS + "/" + _currentYear;
 
@@ -842,8 +843,8 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
-        int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+        //int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+        //int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
         //jScrollPane1.setVerticalScrollBarPolicy(never);
         //scroll.setVerticalScrollBarPolicy(always);
         scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height));
@@ -951,10 +952,15 @@ public class GUI extends javax.swing.JFrame {
         c.gridwidth = 3;
         c.weightx = 1;
         //add event descriptions and delete buttons
+        Event last = null;
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
-            if (e.getEventDate().equals(dateSelected)) {
+            System.out.println("event");
+            System.out.println(e.getEventDate());
+            System.out.println(dateSelected);
+            if (e.getEventDate().equals(dateSelected_noZero)) {
+                System.out.println("match");
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
@@ -963,9 +969,8 @@ public class GUI extends javax.swing.JFrame {
                 if (min >= 30) {
                     c.gridy++;
                 }
-                c.gridx = 4;
+                c.gridx = GridBagConstraints.RELATIVE;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
-                c.gridx = 5;
             }
         }
 
