@@ -243,7 +243,6 @@ public class CreateEvent extends javax.swing.JFrame {
             Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
         }
         getSelectedUsers();
-        ListEvents._eventCount++;
         Serialize.saveUserFiles(Serialize._fileLocation);
         String currentDate = GUI._df.format(GUI._currentDate);
         GUI.updateUpcoming(currentDate);
@@ -278,10 +277,11 @@ public class CreateEvent extends javax.swing.JFrame {
                 if (Arrays.asList(GUI._dept).contains(objectSelected)) {
                     ArrayList<User> departments = GUI._allDepts.get(objectSelected);
                     if (departments != null) {
-                        for (int j = 0; j < departments.size(); j++) {
+                        for (Iterator<User> it = departments.iterator(); it.hasNext();) {
+                            User deptUser = it.next();
                             newEvent.addAttendee(departments.get(i).getUsername());
                             try {
-                                int userId = dbModel.findId(departments.get(i).getUsername(), "User");
+                                int userId = dbModel.findId(deptUser.getUsername(), "User");
                                 int eventId = dbModel.findId(newEvent.getEventName(), "Event");
                                 dbModel.insertUserEvent(userId, eventId);
                             } catch (ClassNotFoundException | SQLException ex) {
@@ -327,13 +327,6 @@ public class CreateEvent extends javax.swing.JFrame {
             }
         }
         try {
-            //for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-            //User user = u.next();
-            //if (!GUI._currentUser.getUsername().equals(user.getUsername())) {
-            // _userModel.setValueAt(user.getUsername(), _rowCounter, 0);
-            //_rowCounter++;
-            //}
-            //}
             dbModel.showUsers(GUI._currentUser.getUsername());
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(CreateEvent.class.getName()).log(Level.SEVERE, null, ex);
@@ -379,7 +372,7 @@ public class CreateEvent extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private org.jdesktop.swingx.JXDatePicker jdpDateSelector;
+    public static org.jdesktop.swingx.JXDatePicker jdpDateSelector;
     private static javax.swing.JSpinner jspTimeSelector;
     public static javax.swing.JRadioButton rbnDept;
     private static javax.swing.JTable tblUserTable;
