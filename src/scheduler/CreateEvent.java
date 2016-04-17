@@ -272,14 +272,14 @@ public class CreateEvent extends javax.swing.JFrame {
         try {
             int[] selectedRows = tblUserTable.getSelectedRows();
             for (int i = 0; i < selectedRows.length; i++) {
-                Object user = tblUserTable.getValueAt(selectedRows[i], 0);
-                String objectSelected = String.valueOf(user);
+                Object object = tblUserTable.getValueAt(selectedRows[i], 0);
+                String objectSelected = String.valueOf(object);
                 if (Arrays.asList(GUI._dept).contains(objectSelected)) {
                     ArrayList<User> departments = GUI._allDepts.get(objectSelected);
                     if (departments != null) {
                         for (Iterator<User> it = departments.iterator(); it.hasNext();) {
                             User deptUser = it.next();
-                            newEvent.addAttendee(departments.get(i).getUsername());
+                            newEvent.addAttendee(deptUser.getUsername());
                             try {
                                 int userId = dbModel.findId(deptUser.getUsername(), "User");
                                 int eventId = dbModel.findId(newEvent.getEventName(), "Event");
@@ -291,7 +291,7 @@ public class CreateEvent extends javax.swing.JFrame {
                     }
                 } else {
                     try {
-                        String username = String.valueOf(user);
+                        String username = String.valueOf(object);
                         newEvent.addAttendee(username);
                         int userId = dbModel.findId(username, "User");
                         int eventId = dbModel.findId(newEvent.getEventName(), "Event");

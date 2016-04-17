@@ -21,7 +21,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -548,7 +547,6 @@ public class GUI extends javax.swing.JFrame {
 
     private void mnuListEditUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuListEditUserActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
         EditUser.run();
     }//GEN-LAST:event_mnuListEditUserActionPerformed
 
