@@ -259,13 +259,7 @@ public class AddUsers extends javax.swing.JFrame {
         txtEmail.setText("");
     }
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-        try {
-            // TODO add your handling code here:
-            this.dispose();
-            new GUI().setVisible(true);
-        } catch (IOException ex) {
-            Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.dispose();
     }//GEN-LAST:event_btnBackActionPerformed
 
     private void cmbDeptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbDeptActionPerformed

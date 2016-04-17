@@ -61,13 +61,13 @@ CREATE TABLE IF NOT EXISTS `scheduler`.`UserEvent` (
   CONSTRAINT `fkUserEvent`
     FOREIGN KEY (`userId`)
     REFERENCES `scheduler`.`User` (`userId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fkEventUser`
     FOREIGN KEY (`eventId`)
     REFERENCES `scheduler`.`Event` (`eventId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -104,13 +104,13 @@ CREATE TABLE IF NOT EXISTS `scheduler`.`UserDept` (
   CONSTRAINT `fkUserDeptfor`
     FOREIGN KEY (`userId`)
     REFERENCES `scheduler`.`User` (`userId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fkDeptUserfor`
     FOREIGN KEY (`deptId`)
     REFERENCES `scheduler`.`Department` (`deptId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 

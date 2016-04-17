@@ -21,8 +21,8 @@ import static scheduler.GUI._userInfo;
 public class ListEvents extends javax.swing.JFrame {
 
     static String[] lister = {"Event Name", "Event Description"};
-    static int _eventCount = _userInfo.get(_currentUser).size();
-    static DefaultTableModel _listerModel = new DefaultTableModel(lister, _eventCount);
+    int _eventCount = _userInfo.get(_currentUser).size();
+    static DefaultTableModel _listerModel = new DefaultTableModel();
 
     /**
      * Creates new form ListEvents
@@ -34,6 +34,8 @@ public class ListEvents extends javax.swing.JFrame {
         tblListEvents.setColumnSelectionAllowed(true);
         tblListEvents.setRowSelectionAllowed(true);
         tblListEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _eventCount = _userInfo.get(_currentUser).size();
+        _listerModel = new DefaultTableModel(lister, _eventCount);
         listEvent();
     }
 
