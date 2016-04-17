@@ -983,6 +983,8 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
+        
+        scroll.getVerticalScrollBar().setUnitIncrement(12);
 
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);
