@@ -83,6 +83,7 @@ public class GUI extends javax.swing.JFrame {
     static boolean dateClicked = false;
     boolean showOneEvent = false;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
+    static ArrayList<Event> notifiedAlready = new ArrayList<Event>();
     static HashMap<String, Double> _dueEvent = new HashMap<>();
 
     static int counter = 0;
@@ -105,19 +106,27 @@ public class GUI extends javax.swing.JFrame {
         checkForNotification = (ActionEvent e) -> {
             checkNotify();
         };
+        checkNotify(); //call once when gui starts
         Timer checkUpdt = new Timer(5000, updateCalendar);
-        Timer checkNotifyTimer = new Timer(10000, checkForNotification);
+        Timer checkNotifyTimer = new Timer(15000, checkForNotification);
         checkNotifyTimer.start();
         checkUpdt.start();
         showEventsUp = (ActionEvent e) -> {
             if (_currentUser != null) {
                 if (showEvent()) {
-                    //EventNotification.run();
+                    EventNotification.run();
                 }
             }
         };
-        Timer checkEvUp = new Timer(10000, showEventsUp);
+        Timer checkEvUp = new Timer(1000*60, showEventsUp);
         checkEvUp.start();
+    }
+    
+    public static void snooze(String eventName, String eventDescr, String eventTime) {
+        ActionListener notifyEvent = (ActionEvent e) -> {
+            new Notification(eventName, eventDescr, eventTime);
+        };
+        Timer snoozeTimer = new Timer(5*60*1000, notifyEvent);
     }
     
     private void checkNotify() {
@@ -130,19 +139,30 @@ public class GUI extends javax.swing.JFrame {
         int currentMinutes = now.get(java.util.Calendar.MINUTE);
         int currentTotalMinutes = currentHour * 60 + currentMinutes;
         Iterator<Event> it = _userInfo.get(_currentUser).iterator();
+        Iterator<Event> itQ = notifiedAlready.iterator();
         String currentDate = (_realMonth +1) + "/" + _realDay + "/" + _realYear;
 
         while (it.hasNext()) {
             Event e = it.next();
             if (e.getEventDate().equals(currentDate)) {
-                String[] eventTimeS = e.getEventTime().split(":");
-                int eventHours = Integer.parseInt(eventTimeS[0]);
-                int eventMinutes = Integer.parseInt(eventTimeS[1]);
-                int totalEventMinutes = eventHours * 60 + eventMinutes;
-                int minutesUntil = totalEventMinutes - currentTotalMinutes;
-                if (minutesUntil < 15 && minutesUntil > 0) {
-                    new Notification(e.getEventName(), e.getEventDescription(), 
-                    e.getEventTime());
+                boolean notified = false;
+                while(itQ.hasNext()) {
+                    if (e.equals(itQ.next())) {
+                        notified = true;
+                        System.out.println("True");
+                    }
+                }
+                if (notified == false) { 
+                    String[] eventTimeS = e.getEventTime().split(":");
+                    int eventHours = Integer.parseInt(eventTimeS[0]);
+                    int eventMinutes = Integer.parseInt(eventTimeS[1]);
+                    int totalEventMinutes = eventHours * 60 + eventMinutes;
+                    int minutesUntil = totalEventMinutes - currentTotalMinutes;
+                    if (minutesUntil < 15 && minutesUntil > 0) {
+                        notifiedAlready.add(e);
+                        new Notification(e.getEventName(), e.getEventDescription(), 
+                        e.getEventTime());
+                    }
                 }
             }
         }
