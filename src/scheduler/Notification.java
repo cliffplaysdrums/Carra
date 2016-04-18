@@ -19,6 +19,7 @@ public class Notification extends javax.swing.JFrame {
         lblEventName.setText(eventName);
         txtEventDescr.setText(eventDescr);
         lblEventTime.setText(eventTime);
+        this.setVisible(true);
     }
 
     /**
