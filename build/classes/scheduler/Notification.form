@@ -99,11 +99,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Snooze"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSnoozeActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnDismiss">
       <Properties>
         <Property name="text" type="java.lang.String" value="Dismiss"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDismissActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
