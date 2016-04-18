@@ -17,8 +17,8 @@ public class Notification extends javax.swing.JFrame {
     public Notification(String eventName, String eventDescr, String eventTime) {
         initComponents();
         lblEventName.setText(eventName);
-        txtEventDescr.setText(eventDescr);
-        lblEventTime.setText(eventTime);
+        lblEventDescr.setText(eventDescr);
+        lblEventTime.setText("Scheduled for " + eventTime);
         this.setVisible(true);
     }
 
@@ -31,25 +31,33 @@ public class Notification extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         lblEventName = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtEventDescr = new javax.swing.JTextArea();
         lblEventTime = new javax.swing.JLabel();
         btnSnooze = new javax.swing.JButton();
         btnDismiss = new javax.swing.JButton();
+        lblEventDescr = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reminder");
         setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(204, 204, 255));
+        setForeground(new java.awt.Color(204, 204, 255));
 
+        jPanel1.setBackground(new java.awt.Color(204, 204, 255));
+
+        lblEventName.setBackground(new java.awt.Color(204, 204, 255));
+        lblEventName.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
+        lblEventName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblEventName.setText("jLabel1");
 
-        txtEventDescr.setColumns(20);
-        txtEventDescr.setRows(5);
-        jScrollPane1.setViewportView(txtEventDescr);
-
+        lblEventTime.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
+        lblEventTime.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblEventTime.setText("jLabel2");
+        lblEventTime.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
+        btnSnooze.setFont(new java.awt.Font("Trebuchet MS", 0, 13)); // NOI18N
+        btnSnooze.setForeground(new java.awt.Color(51, 51, 51));
         btnSnooze.setText("Snooze");
         btnSnooze.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -57,6 +65,8 @@ public class Notification extends javax.swing.JFrame {
             }
         });
 
+        btnDismiss.setFont(new java.awt.Font("Trebuchet MS", 0, 13)); // NOI18N
+        btnDismiss.setForeground(new java.awt.Color(51, 51, 51));
         btnDismiss.setText("Dismiss");
         btnDismiss.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -64,43 +74,59 @@ public class Notification extends javax.swing.JFrame {
             }
         });
 
+        lblEventDescr.setBackground(new java.awt.Color(204, 204, 255));
+        lblEventDescr.setFont(new java.awt.Font("Trebuchet MS", 2, 14)); // NOI18N
+        lblEventDescr.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblEventDescr.setText("jLabel1");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(41, 41, 41)
+                .addComponent(btnSnooze)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 168, Short.MAX_VALUE)
+                .addComponent(btnDismiss)
+                .addGap(41, 41, 41))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblEventTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblEventName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblEventDescr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(lblEventName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(lblEventDescr, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(lblEventTime, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnDismiss)
+                    .addComponent(btnSnooze))
+                .addGap(26, 26, 26))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(btnSnooze)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnDismiss)
-                .addGap(55, 55, 55))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(169, 169, 169)
-                        .addComponent(lblEventName))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(109, 109, 109)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(164, 164, 164)
-                        .addComponent(lblEventTime)))
-                .addContainerGap(125, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblEventName)
-                .addGap(30, 30, 30)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addComponent(lblEventTime)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSnooze)
-                    .addComponent(btnDismiss))
-                .addGap(29, 29, 29))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -111,7 +137,7 @@ public class Notification extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDismissActionPerformed
 
     private void btnSnoozeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSnoozeActionPerformed
-        GUI.snooze(lblEventName.getText(), txtEventDescr.getText(), 
+        GUI.snooze(lblEventName.getText(), lblEventDescr.getText(), 
                 lblEventTime.getText());
         this.dispose();
     }//GEN-LAST:event_btnSnoozeActionPerformed
@@ -154,9 +180,9 @@ public class Notification extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDismiss;
     private javax.swing.JButton btnSnooze;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblEventDescr;
     private javax.swing.JLabel lblEventName;
     private javax.swing.JLabel lblEventTime;
-    private javax.swing.JTextArea txtEventDescr;
     // End of variables declaration//GEN-END:variables
 }

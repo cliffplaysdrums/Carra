@@ -40,6 +40,7 @@ import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Ayomitunde
+ * @author Cliff
  */
 public class GUI extends javax.swing.JFrame {
 
@@ -47,7 +48,7 @@ public class GUI extends javax.swing.JFrame {
      * These only affect the appearance of the "hidden" table that is 
      *   displayed when you click on a specific date
      */
-    private java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 255, 204);
+    private java.awt.Color BACKGROUND_COLOR = new java.awt.Color(204, 204, 255);
     private java.awt.Color FOREGROUND_COLOR = new java.awt.Color(51, 51, 51);
     private java.awt.Color BTN_BACKGROUND_COLOR = new java.awt.Color(102, 204, 255);
     private java.awt.Font BTN_FONT = new java.awt.Font("Tahoma", 1, 11);
@@ -66,7 +67,7 @@ public class GUI extends javax.swing.JFrame {
     static int modelrowCount = 0;
     GregorianCalendar _calendar;
     static DefaultTableModel _CalendarTableModel = new DefaultTableModel(_days, 6);
-    static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_upEvents, 6);
+    static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(0,0);
     static DefaultTableModel _invitationEventModel = new DefaultTableModel(_invitesModel, 100);
     final int _CALENDAR_HEIGHT = 100;
     static ArrayList<Event> _allEvents = new ArrayList<>();
@@ -88,6 +89,7 @@ public class GUI extends javax.swing.JFrame {
     static int counter = 0;
 
     public GUI() throws IOException {
+        initComponents();
         this._calendar = new GregorianCalendar();
         _realDay = _calendar.get(GregorianCalendar.DAY_OF_MONTH);
         _realMonth = _calendar.get(GregorianCalendar.MONTH);
@@ -95,7 +97,8 @@ public class GUI extends javax.swing.JFrame {
         _currentMonth = _realMonth;
         _currentYear = _realYear;
         _currentUser = null;
-        initComponents();
+        _upcomingEventsModel.setColumnIdentifiers(_upEvents);
+        tblUpcomingEvents.setModel(_upcomingEventsModel);
         set();
         updateCalendar = (ActionEvent e) -> {
             if (_currentUser != null) { // this should be removed too
@@ -105,6 +108,7 @@ public class GUI extends javax.swing.JFrame {
         checkForNotification = (ActionEvent e) -> {
             checkNotify();
         };
+        updateCalendar(); 
         checkNotify(); //call once when gui starts
         Timer checkUpdt = new Timer(5000, updateCalendar);
         Timer checkNotifyTimer = new Timer(15000, checkForNotification);
@@ -125,7 +129,7 @@ public class GUI extends javax.swing.JFrame {
         ActionListener notifyEvent = (ActionEvent e) -> {
             new Notification(eventName, eventDescr, eventTime);
         };
-        Timer snoozeTimer = new Timer(5*60*1000, notifyEvent);
+        Timer snoozeTimer = new Timer(1*60*1000, notifyEvent);
         snoozeTimer.start();
         snoozeTimer.setRepeats(false);
     }
@@ -359,7 +363,6 @@ public class GUI extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(204, 255, 255));
 
-        tblUpcomingEvents.setModel(_upcomingEventsModel);
         jScrollPane3.setViewportView(tblUpcomingEvents);
 
         jTable1.setModel(_invitationEventModel);
@@ -507,7 +510,6 @@ public class GUI extends javax.swing.JFrame {
         tblCalendar.setRowSelectionAllowed(true);
         tblCalendar.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        reloadUpcoming();
         tblUpcomingEvents.getTableHeader().setResizingAllowed(false);
         tblUpcomingEvents.getTableHeader().setReorderingAllowed(false);
         tblUpcomingEvents.setColumnSelectionAllowed(true);
@@ -555,27 +557,16 @@ public class GUI extends javax.swing.JFrame {
         refreshCalendar(_realMonth, _realYear);
     }
 
-    private void reloadUpcoming() {
-        int rowCount = _upcomingEventsModel.getRowCount();
-        for (int i = 0; i < rowCount; i++) {
-            _upcomingEventsModel.setValueAt("", i, 0);
-        }
-    }
-
     //Go through all events for current user, if date is today, update table to show them
     public static void updateUpcoming(String currentDate) {
-        int j = 0;
+        _upcomingEventsModel.setRowCount(0);
         if (_currentUser != null) { // null check should be removed later
             ArrayList<Event> currentuserEvents = _userInfo.get(_currentUser);
             if (currentuserEvents != null) { // should never be null
                 for (Iterator<Event> it = currentuserEvents.iterator(); it.hasNext();) {
                     Event e = it.next();
                     if (e.getEventDate().equals(currentDate)) {
-                        if (j >= 5) {
-                            break;
-                        }
-                        _upcomingEventsModel.setValueAt(e.getEventName() + " at " + e.getEventTime(), j, 0);
-                        j++;
+                        _upcomingEventsModel.addRow(new Object[]{e.getEventName()+" at "+e.getEventTime()});
                     }
                 }
             }
@@ -738,7 +729,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private boolean showEvent() {
-        int i = 0;
+        EventNotification._upcomingEventsModel.setRowCount(0);
         boolean eventExist = false;
         for (Iterator<Event> it = _upcomingEvents.iterator(); it.hasNext();) {
             Event e = it.next();
@@ -753,9 +744,7 @@ public class GUI extends javax.swing.JFrame {
                     if (!_dueEvent.containsKey(e.getEventName()) || _dueEvent.get(e.getEventName()) <= 0) {
                         _dueEvent.put(e.getEventName(), 5.0); // show again in 5 minutes
                         eventExist = true;
-                        EventNotification._upcomingEventsModel.setValueAt(e.getEventDescription(), i, 0);
-                        EventNotification._upcomingEventsModel.setValueAt(tD, i, 1);
-                        i++;
+                        EventNotification._upcomingEventsModel.addRow(new Object[]{e.getEventDescription(), tD});
                     } else// reduce time until it shows again
                     {
                         if (timeDue == 0) {
