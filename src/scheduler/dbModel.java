@@ -174,6 +174,24 @@ public class dbModel {
         }
     }
 
+    public static boolean findEvent(String eventName) throws SQLException{
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try{
+            conn = getConnection();
+            sql = "select * from Event where eventName = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, eventName);
+            rs = stmt.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(dbModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
     public static int findId(String name, String query) throws ClassNotFoundException, SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -243,16 +261,22 @@ public class dbModel {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         String username = null;
+        String deptName = null;
         Boolean isAdmin = null;
         try {
             conn = getConnection();
-            sql = "select username, isAdmin from user";
+            sql = "select user.username, user.isAdmin, "
+                    + "Department.deptName from user "
+                    + "inner join UserDept on user.userId = UserDept.userId"
+                    + " inner join Department on " +
+                   "UserDept.deptId = Department.deptId;";
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 username = rs.getString("username");
+                deptName = rs.getString("deptName");
                 isAdmin = rs.getBoolean("isAdmin");
-                _dtm.addRow(new Object[]{username, isAdmin});
+                _dtm.addRow(new Object[]{username, deptName, isAdmin});
                 CreateEvent._userModel.setValueAt(username, CreateEvent._rowCounter, 0);
                 CreateEvent._rowCounter++;
             }

@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.ComboBox;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,9 +24,22 @@ public class EditUser extends javax.swing.JFrame {
     /**
      * Creates new form EditUser
      */
-    String[] _header = new String[]{"Username", "IsAdmin"};
+    String[] _header = new String[]{"Username", "Department", "IsAdmin"};
     Object[][] _data;
-    static DefaultTableModel _dtm = new DefaultTableModel(0, 0);
+    static DefaultTableModel _dtm = new DefaultTableModel(0, 0){
+        @Override
+        public boolean isCellEditable(int row, int column){
+            return column == 2;
+        }
+        
+        @Override
+        public Class<?> getColumnClass(int colIndex){
+            if(colIndex == 2){
+                return Boolean.class;
+            }
+            return super.getColumnClass(colIndex);
+        }
+    };
     static User _edit;
 
     public EditUser() {
@@ -53,10 +68,10 @@ public class EditUser extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblEditUser = new javax.swing.JTable();
         btnEdit = new javax.swing.JButton();
-        btnHome = new javax.swing.JButton();
+        btnBack = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblRmvUser.setFont(new java.awt.Font("Trajan Pro", 1, 24)); // NOI18N
         lblRmvUser.setText("Users");
@@ -95,10 +110,10 @@ public class EditUser extends javax.swing.JFrame {
             }
         });
 
-        btnHome.setText("Home");
-        btnHome.addActionListener(new java.awt.event.ActionListener() {
+        btnBack.setText("Back");
+        btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnHomeActionPerformed(evt);
+                btnBackActionPerformed(evt);
             }
         });
 
@@ -132,7 +147,7 @@ public class EditUser extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnSearch))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnHome)
+                        .addComponent(btnBack)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEdit)
                         .addGap(18, 18, 18)
@@ -155,7 +170,7 @@ public class EditUser extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit)
-                    .addComponent(btnHome)
+                    .addComponent(btnBack)
                     .addComponent(btnDelete))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
@@ -189,9 +204,21 @@ public class EditUser extends javax.swing.JFrame {
 
     public void getUser() {
         int row = tblEditUser.getSelectedRow();
-        int column = tblEditUser.getSelectedColumn();
+        int column = tblEditUser.getSelectedColumn(); // 0 -> username, 1 -> departmentName, 2 -> isAdmin
         if (row >= 0 && column >= 0) {
             Object value = _dtm.getValueAt(row, column);
+            switch (column) {
+                case 0:
+                    String username = value.toString(); // should not be editable
+                    break;
+                case 1:
+                    String departmentName = value.toString();
+                    break;
+                default:
+                    String isAdmin = value.toString();
+                    
+                    break;
+            }
             for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
                 _edit = u.next();
                 if (value.equals(_edit.getUsername())) {
@@ -232,15 +259,10 @@ public class EditUser extends javax.swing.JFrame {
         Serialize.saveUserFiles(Serialize._fileLocation);
     }//GEN-LAST:event_btnEditActionPerformed
 
-    private void btnHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeActionPerformed
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        try {
-            new GUI().setVisible(true);
-        } catch (IOException ex) {
-            Logger.getLogger(EditUser.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnHomeActionPerformed
+    }//GEN-LAST:event_btnBackActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
@@ -289,14 +311,14 @@ public class EditUser extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBack;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnHome;
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblRmvUser;
-    private javax.swing.JTable tblEditUser;
+    private static javax.swing.JTable tblEditUser;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

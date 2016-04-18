@@ -21,8 +21,8 @@ import static scheduler.GUI._userInfo;
 public class ListEvents extends javax.swing.JFrame {
 
     static String[] lister = {"Event Name", "Event Description"};
-    int _eventCount = _userInfo.get(_currentUser).size();
-    static DefaultTableModel _listerModel = new DefaultTableModel();
+    //int _eventCount = _userInfo.get(_currentUser).size();
+    static DefaultTableModel _listerModel = new DefaultTableModel(0, 0);
 
     /**
      * Creates new form ListEvents
@@ -34,27 +34,26 @@ public class ListEvents extends javax.swing.JFrame {
         tblListEvents.setColumnSelectionAllowed(true);
         tblListEvents.setRowSelectionAllowed(true);
         tblListEvents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        _eventCount = _userInfo.get(_currentUser).size();
-        _listerModel = new DefaultTableModel(lister, _eventCount);
+        //_eventCount = _userInfo.get(_currentUser).size();
+        _listerModel.setColumnIdentifiers(lister);
+        tblListEvents.setModel(_listerModel);
         listEvent();
     }
 
     private void listEvent() {
-        int i = 0;
+        _listerModel.setRowCount(0);
         for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
             Event e = it.next();
-            ListEvents._listerModel.setValueAt(e.getEventName(), i, 0);
-            ListEvents._listerModel.setValueAt(e.getEventDescription(), i, 1);
-            i++;
+            _listerModel.addRow(new Object[]{e.getEventName(), e.getEventDescription()});
         }
     }
 
-    private void clear() {
-        for (int i = 0; i < _listerModel.getRowCount(); i++) {
-            _listerModel.setValueAt(null, i, 0);
-            _listerModel.setValueAt(null, i, 1);
-        }
-    }
+//    private void clear() {
+//        for (int i = 0; i < _listerModel.getRowCount(); i++) {
+//            _listerModel.setValueAt(null, i, 0);
+//            _listerModel.setValueAt(null, i, 1);
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -99,7 +98,6 @@ public class ListEvents extends javax.swing.JFrame {
         jLabel1.setText("Events");
         jPanel1.add(jLabel1, java.awt.BorderLayout.PAGE_START);
 
-        tblListEvents.setModel(_listerModel);
         tblListEvents.setRowHeight(22);
         jScrollPane3.setViewportView(tblListEvents);
 
@@ -163,7 +161,6 @@ public class ListEvents extends javax.swing.JFrame {
                 }
             }
             Serialize.saveUserFiles(Serialize._fileLocation);
-            clear();
             listEvent();
         }
 

@@ -38,8 +38,9 @@ public class Notification extends javax.swing.JFrame {
         btnSnooze = new javax.swing.JButton();
         btnDismiss = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reminder");
+        setAlwaysOnTop(true);
 
         lblEventName.setText("jLabel1");
 

@@ -216,6 +216,9 @@ public class AddUsers extends javax.swing.JFrame {
                 }
                 if (_userDepartment != null || dbModel.findUser(username) == false) {
                     newUser = new User(username, encryptedPassword, salt, email);
+                    if (chkAdmin.isSelected()) {
+                        newUser.makeAdmin(true);
+                    }
                     try {
                         dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
                         dbModel.addUserDept(username, _userDepartment);
@@ -227,10 +230,7 @@ public class AddUsers extends javax.swing.JFrame {
                         departmentUsers = new ArrayList<>();
                     }
                     departmentUsers.add(newUser);
-                    GUI._allDepts.put(_userDepartment, departmentUsers);
-                    if (chkAdmin.isSelected()) {
-                        newUser.makeAdmin(true);
-                    }
+                    GUI._allDepts.put(_userDepartment, departmentUsers);                    
                     GUI._userInfo.put(newUser, new ArrayList<>());
                     Serialize.saveUserFiles(Serialize._fileLocation);
                     JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
@@ -302,7 +302,7 @@ public class AddUsers extends javax.swing.JFrame {
     private javax.swing.JButton btnBack;
     private javax.swing.JButton btnCreate;
     private javax.swing.JCheckBox chkAdmin;
-    private static javax.swing.JComboBox<String> cmbDept;
+    public static javax.swing.JComboBox<String> cmbDept;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblPassword1;
     private javax.swing.JLabel lblPassword2;
