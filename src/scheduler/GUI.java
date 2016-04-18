@@ -21,7 +21,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -127,6 +126,8 @@ public class GUI extends javax.swing.JFrame {
             new Notification(eventName, eventDescr, eventTime);
         };
         Timer snoozeTimer = new Timer(5*60*1000, notifyEvent);
+        snoozeTimer.start();
+        snoozeTimer.setRepeats(false);
     }
     
     private void checkNotify() {
@@ -139,17 +140,17 @@ public class GUI extends javax.swing.JFrame {
         int currentMinutes = now.get(java.util.Calendar.MINUTE);
         int currentTotalMinutes = currentHour * 60 + currentMinutes;
         Iterator<Event> it = _userInfo.get(_currentUser).iterator();
-        Iterator<Event> itQ = notifiedAlready.iterator();
         String currentDate = (_realMonth +1) + "/" + _realDay + "/" + _realYear;
 
         while (it.hasNext()) {
             Event e = it.next();
+            Iterator<Event> itQ = notifiedAlready.iterator();
             if (e.getEventDate().equals(currentDate)) {
                 boolean notified = false;
                 while(itQ.hasNext()) {
-                    if (e.equals(itQ.next())) {
+                    Event evt = itQ.next();
+                    if (e.getEventName().equals(evt.getEventName())) {
                         notified = true;
-                        System.out.println("True");
                     }
                 }
                 if (notified == false) { 
@@ -602,7 +603,6 @@ public class GUI extends javax.swing.JFrame {
 
     private void mnuListEditUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuListEditUserActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
         EditUser.run();
     }//GEN-LAST:event_mnuListEditUserActionPerformed
 
