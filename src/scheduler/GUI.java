@@ -78,10 +78,12 @@ public class GUI extends javax.swing.JFrame {
     static Date _currentDate = new Date();
     private final ActionListener updateCalendar;
     private final ActionListener showEventsUp;
+    private final ActionListener checkForNotification;
     static boolean dateClicked = false;
     boolean showOneEvent = false;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
-    static HashMap<String, Double> _dueEvent = new HashMap<>();
+    static ArrayList<Event> _notifiedAlready = new ArrayList<>();
+    public static HashMap<String, Double> _dueEvent = new HashMap<>();
 
     static int counter = 0;
 
@@ -102,7 +104,13 @@ public class GUI extends javax.swing.JFrame {
                 updateCalendar();
             }
         };
+        checkForNotification = (ActionEvent e) -> {
+            checkNotify();
+        };
+        checkNotify(); //call once when gui starts
         Timer checkUpdt = new Timer(5000, updateCalendar);
+        Timer checkNotifyTimer = new Timer(15000, checkForNotification);
+        checkNotifyTimer.start();
         checkUpdt.start();
         showEventsUp = (ActionEvent e) -> {
             if (_currentUser != null) {
@@ -111,8 +119,56 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         };
-        Timer checkEvUp = new Timer(10000, showEventsUp);
+        Timer checkEvUp = new Timer(15000, showEventsUp);
         checkEvUp.start();
+    }
+    
+    public static void snooze(String eventName, String eventDescr, String eventTime) {
+        ActionListener notifyEvent = (ActionEvent e) -> {
+            new Notification(eventName, eventDescr, eventTime);
+        };
+        Timer snoozeTimer = new Timer(5*60*1000, notifyEvent);
+        snoozeTimer.start();
+        snoozeTimer.setRepeats(false);
+    }
+    
+    private void checkNotify() {
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int currentHour = now.get(java.util.Calendar.HOUR);
+        if (now.get(java.util.Calendar.AM_PM) == java.util.Calendar.PM &&
+                currentHour != 12) {
+            currentHour += 12;
+        }
+        int currentMinutes = now.get(java.util.Calendar.MINUTE);
+        int currentTotalMinutes = currentHour * 60 + currentMinutes;
+        Iterator<Event> it = _userInfo.get(_currentUser).iterator();
+        String currentDate = (_realMonth +1) + "/" + _realDay + "/" + _realYear;
+
+        while (it.hasNext()) {
+            Event e = it.next();
+            Iterator<Event> itQ = _notifiedAlready.iterator();
+            if (e.getEventDate().equals(currentDate)) {
+                boolean notified = false;
+                while(itQ.hasNext()) {
+                    Event evt = itQ.next();
+                    if (e.getEventName().equals(evt.getEventName())) {
+                        notified = true;
+                    }
+                }
+                if (notified == false) { 
+                    String[] eventTimeS = e.getEventTime().split(":");
+                    int eventHours = Integer.parseInt(eventTimeS[0]);
+                    int eventMinutes = Integer.parseInt(eventTimeS[1]);
+                    int totalEventMinutes = eventHours * 60 + eventMinutes;
+                    int minutesUntil = totalEventMinutes - currentTotalMinutes;
+                    if (minutesUntil < 15 && minutesUntil > 0) {
+                        _notifiedAlready.add(e);
+                        new Notification(e.getEventName(), e.getEventDescription(), 
+                        e.getEventTime());
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -671,9 +727,8 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private boolean showEvent() {
-        EventNotification._upcomingEventsModel.setRowCount(0);
         boolean eventExist = false;
-        for (Iterator<Event> it = _upcomingEvents.iterator(); it.hasNext();) {
+        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
             Event e = it.next();
             String currDate = _df.format(_currentDate);
             if (currDate.equals(e.getEventDate())) {
@@ -682,16 +737,18 @@ public class GUI extends javax.swing.JFrame {
                 int timeDue = calcTime(e.getEventTime()) - calcTime(time);
                 //System.out.println("curr time " + time + " even time " + e.getEventTime() + " time diff " + timeDue);
                 String tD = timeDue > 1 ? String.valueOf(timeDue) + " minutes" : String.valueOf(timeDue) + " minute";
+                String tme = tD.split(" ")[0];
                 if (timeDue >= 0 && timeDue <= 15) {
                     if (!_dueEvent.containsKey(e.getEventName()) || _dueEvent.get(e.getEventName()) <= 0) {
-                        _dueEvent.put(e.getEventName(), 5.0); // show again in 5 minutes
+                        _dueEvent.put(e.getEventName(), Double.parseDouble(tme)); // show again in 5 minutes
+                        EventNotification.run();
                         eventExist = true;
-                        EventNotification._upcomingEventsModel.addRow(new Object[]{e.getEventDescription(), tD});
+                        //EventNotification._upcomingEventsModel.addRow(new Object[]{e.getEventDescription(), tD});
                     } else// reduce time until it shows again
                     {
                         if (timeDue == 0) {
                             _dueEvent.remove(e.getEventName());
-                        } else {
+                        } else{
                             _dueEvent.put(e.getEventName(), (_dueEvent.get(e.getEventName()) - 0.5));
                         }
                     }
@@ -703,16 +760,11 @@ public class GUI extends javax.swing.JFrame {
 
     private int calcTime(String time) {
         int currTime = 0;
-        String cat = "";
-        for (int i = 0; i < time.length(); i++) {
-            if (time.charAt(i) != ':') {
-                cat += time.charAt(i);
-            } else {
-                currTime += Integer.parseInt(cat);
-                cat = "";
-            }
-        }
-        return currTime;
+        String [] tokens = time.split(":");
+        currTime += Integer.parseInt(tokens[0]) * 3600;
+        currTime += Integer.parseInt(tokens[1]) * 60;
+        currTime += Integer.parseInt(tokens[2]);
+        return currTime/60;
     }
 
     static class tblCalendarRenderer extends DefaultTableCellRenderer {
@@ -817,6 +869,7 @@ public class GUI extends javax.swing.JFrame {
         int daySelected = row * 7 + col + 1 - offset;
         String dayS = daySelected < 10 ? "0" + String.valueOf(daySelected) : String.valueOf(daySelected);
         int cMonth = _currentMonth+1;
+        String dateSelected_noZero = cMonth + "/" + daySelected + "/" + _currentYear;
         String currMonth = cMonth < 10 ? "0"+String.valueOf(cMonth) : String.valueOf(cMonth);
         String dateSelected = currMonth + "/" + dayS + "/" + _currentYear;
 
@@ -827,8 +880,8 @@ public class GUI extends javax.swing.JFrame {
         javax.swing.JPanel upperPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JPanel lowerPanel = new javax.swing.JPanel(new GridBagLayout());
         javax.swing.JScrollPane scroll = new javax.swing.JScrollPane(lowerPanel);
-        int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
-        int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+        //int always = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+        //int never = javax.swing.JScrollPane.VERTICAL_SCROLLBAR_NEVER;
         //jScrollPane1.setVerticalScrollBarPolicy(never);
         //scroll.setVerticalScrollBarPolicy(always);
         scroll.setPreferredSize(new java.awt.Dimension(d.width, d.height));
@@ -910,12 +963,6 @@ public class GUI extends javax.swing.JFrame {
             lowerPanel.add(new javax.swing.JSeparator(
                     javax.swing.SwingConstants.VERTICAL), c);
 
-            //event
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 2;
-            c.gridwidth = 3;
-            c.weightx = 1;
-
             //time every 1/2 hour (1:30, 2:30, etc)
             c.fill = GridBagConstraints.NONE;
             c.gridx = 0;
@@ -939,7 +986,7 @@ public class GUI extends javax.swing.JFrame {
         ArrayList<Event> currentUserEvents = _userInfo.get(_currentUser);
         for (Iterator<Event> it = currentUserEvents.iterator(); it.hasNext();) {
             Event e = it.next();
-            if (e.getEventDate().equals(dateSelected)) {
+            if (e.getEventDate().equals(dateSelected_noZero)) {
                 String[] time = e.getEventTime().split(":");
                 int hour = Integer.parseInt(time[0]);
                 int min = Integer.parseInt(time[1]);
@@ -948,9 +995,8 @@ public class GUI extends javax.swing.JFrame {
                 if (min >= 30) {
                     c.gridy++;
                 }
-                c.gridx = 4;
+                c.gridx = GridBagConstraints.RELATIVE;
                 lowerPanel.add(new javax.swing.JLabel(e.getEventDescription()), c);
-                c.gridx = 5;
             }
         }
 
@@ -963,6 +1009,8 @@ public class GUI extends javax.swing.JFrame {
         c.gridy = 1;
         c.fill = GridBagConstraints.BOTH;
         dateGUI.add(scroll, c);
+        
+        scroll.getVerticalScrollBar().setUnitIncrement(12);
 
         btnBack.addActionListener((java.awt.event.ActionEvent e) -> {
             jScrollPane1.setViewportView(tblCalendar);

@@ -19,6 +19,7 @@ public class Notification extends javax.swing.JFrame {
         lblEventName.setText(eventName);
         txtEventDescr.setText(eventDescr);
         lblEventTime.setText(eventTime);
+        this.setVisible(true);
     }
 
     /**
@@ -37,8 +38,9 @@ public class Notification extends javax.swing.JFrame {
         btnSnooze = new javax.swing.JButton();
         btnDismiss = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Reminder");
+        setAlwaysOnTop(true);
 
         lblEventName.setText("jLabel1");
 
@@ -49,8 +51,18 @@ public class Notification extends javax.swing.JFrame {
         lblEventTime.setText("jLabel2");
 
         btnSnooze.setText("Snooze");
+        btnSnooze.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSnoozeActionPerformed(evt);
+            }
+        });
 
         btnDismiss.setText("Dismiss");
+        btnDismiss.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDismissActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -93,6 +105,16 @@ public class Notification extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnDismissActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDismissActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnDismissActionPerformed
+
+    private void btnSnoozeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSnoozeActionPerformed
+        GUI.snooze(lblEventName.getText(), txtEventDescr.getText(), 
+                lblEventTime.getText());
+        this.dispose();
+    }//GEN-LAST:event_btnSnoozeActionPerformed
 
     /**
      * @param args the command line arguments
