@@ -83,8 +83,8 @@ public class GUI extends javax.swing.JFrame {
     static boolean dateClicked = false;
     boolean showOneEvent = false;
     static ArrayList<Event> _upcomingEvents = new ArrayList<>();
-    static ArrayList<Event> notifiedAlready = new ArrayList<Event>();
-    static HashMap<String, Double> _dueEvent = new HashMap<>();
+    static ArrayList<Event> _notifiedAlready = new ArrayList<>();
+    public static HashMap<String, Double> _dueEvent = new HashMap<>();
 
     static int counter = 0;
 
@@ -108,7 +108,10 @@ public class GUI extends javax.swing.JFrame {
         checkForNotification = (ActionEvent e) -> {
             checkNotify();
         };
-        updateCalendar(); 
+        updateCalendar(); /* This ensures that there is no delay between when
+                        the calendar is loaded and when it is populated.
+                        However, if no users exist, this code will cause using
+                        the home button to login to crash the application */
         checkNotify(); //call once when gui starts
         Timer checkUpdt = new Timer(5000, updateCalendar);
         Timer checkNotifyTimer = new Timer(15000, checkForNotification);
@@ -121,7 +124,7 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         };
-        Timer checkEvUp = new Timer(1000*60, showEventsUp);
+        Timer checkEvUp = new Timer(15000, showEventsUp);
         checkEvUp.start();
     }
     
@@ -148,7 +151,7 @@ public class GUI extends javax.swing.JFrame {
 
         while (it.hasNext()) {
             Event e = it.next();
-            Iterator<Event> itQ = notifiedAlready.iterator();
+            Iterator<Event> itQ = _notifiedAlready.iterator();
             if (e.getEventDate().equals(currentDate)) {
                 boolean notified = false;
                 while(itQ.hasNext()) {
@@ -164,7 +167,7 @@ public class GUI extends javax.swing.JFrame {
                     int totalEventMinutes = eventHours * 60 + eventMinutes;
                     int minutesUntil = totalEventMinutes - currentTotalMinutes;
                     if (minutesUntil < 15 && minutesUntil > 0) {
-                        notifiedAlready.add(e);
+                        _notifiedAlready.add(e);
                         new Notification(e.getEventName(), e.getEventDescription(), 
                         e.getEventTime());
                     }
@@ -729,9 +732,8 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private boolean showEvent() {
-        EventNotification._upcomingEventsModel.setRowCount(0);
         boolean eventExist = false;
-        for (Iterator<Event> it = _upcomingEvents.iterator(); it.hasNext();) {
+        for (Iterator<Event> it = _userInfo.get(_currentUser).iterator(); it.hasNext();) {
             Event e = it.next();
             String currDate = _df.format(_currentDate);
             if (currDate.equals(e.getEventDate())) {
@@ -740,16 +742,18 @@ public class GUI extends javax.swing.JFrame {
                 int timeDue = calcTime(e.getEventTime()) - calcTime(time);
                 //System.out.println("curr time " + time + " even time " + e.getEventTime() + " time diff " + timeDue);
                 String tD = timeDue > 1 ? String.valueOf(timeDue) + " minutes" : String.valueOf(timeDue) + " minute";
+                String tme = tD.split(" ")[0];
                 if (timeDue >= 0 && timeDue <= 15) {
                     if (!_dueEvent.containsKey(e.getEventName()) || _dueEvent.get(e.getEventName()) <= 0) {
-                        _dueEvent.put(e.getEventName(), 5.0); // show again in 5 minutes
+                        _dueEvent.put(e.getEventName(), Double.parseDouble(tme)); // show again in 5 minutes
+                        EventNotification.run();
                         eventExist = true;
-                        EventNotification._upcomingEventsModel.addRow(new Object[]{e.getEventDescription(), tD});
+                        //EventNotification._upcomingEventsModel.addRow(new Object[]{e.getEventDescription(), tD});
                     } else// reduce time until it shows again
                     {
                         if (timeDue == 0) {
                             _dueEvent.remove(e.getEventName());
-                        } else {
+                        } else{
                             _dueEvent.put(e.getEventName(), (_dueEvent.get(e.getEventName()) - 0.5));
                         }
                     }
@@ -761,16 +765,11 @@ public class GUI extends javax.swing.JFrame {
 
     private int calcTime(String time) {
         int currTime = 0;
-        String cat = "";
-        for (int i = 0; i < time.length(); i++) {
-            if (time.charAt(i) != ':') {
-                cat += time.charAt(i);
-            } else {
-                currTime += Integer.parseInt(cat);
-                cat = "";
-            }
-        }
-        return currTime;
+        String [] tokens = time.split(":");
+        currTime += Integer.parseInt(tokens[0]) * 3600;
+        currTime += Integer.parseInt(tokens[1]) * 60;
+        currTime += Integer.parseInt(tokens[2]);
+        return currTime/60;
     }
 
     static class tblCalendarRenderer extends DefaultTableCellRenderer {
