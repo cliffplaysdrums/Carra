@@ -230,9 +230,7 @@ public class CreateEvent extends javax.swing.JFrame {
         ndate = ndate.replaceAll(" ", "/");
         // create new event here
         newEvent = new Event(eventName, eventDescr, ndate, time, creator);
-        if (GUI._upcomingEventsModel.getRowCount() < 6) {
-            GUI._upcomingEventsModel.setValueAt(newEvent.getEventName() + " at " + newEvent.getEventTime(), GUI._upcomingEventsModel.getRowCount(), 0);
-        }
+        GUI._upcomingEventsModel.addRow(new Object[]{newEvent.getEventName() +" at "+newEvent.getEventTime()});
         ArrayList<Event> userEvents = GUI._userInfo.get(creator) == null ? new ArrayList<>() : GUI._userInfo.get(creator); // should not be equal null.. check!!
         userEvents.add(newEvent);
         GUI._userInfo.put(creator, userEvents);

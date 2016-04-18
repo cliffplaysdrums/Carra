@@ -26,7 +26,7 @@ public class Logon extends javax.swing.JFrame {
      */
     File _testLog;
     static String _loginUsername = null;
-    
+
     public Logon() throws IOException {
         initComponents();
         GUI._currentUser = null;
@@ -139,28 +139,19 @@ public class Logon extends javax.swing.JFrame {
         // TODO add your handling code here:
         _loginUsername = txtUsername.getText();
         String password = txtPassword.getText();
-        boolean valid = false;
 
         if ("".equals(_loginUsername) || "".equals(password)) {
             JOptionPane.showMessageDialog(null, "Please Input a Username and Password", "Input Required", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
                 if (dbModel.logUser(_loginUsername, password)) {
-                    for (Iterator<User> u = GUI._userInfo.keySet().iterator(); u.hasNext();) {
-                        User user = u.next();
-                        if (user.getUsername().equals(_loginUsername)) {
-                            user.setLogged(true);
-                            try {
-                                valid = true;
-                                this.dispose();
-                                new GUI().setVisible(true);
-                            } catch (IOException ex) {
-                                Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
+                    try {
+                        this.dispose();
+                        new GUI().setVisible(true);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Logon.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                }
-                if (valid == false) {
+                } else {
                     JOptionPane.showMessageDialog(null, "Could not locate User", "Invalid User", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (ClassNotFoundException | SQLException ex) {

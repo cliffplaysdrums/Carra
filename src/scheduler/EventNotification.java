@@ -13,11 +13,13 @@ import javax.swing.table.DefaultTableModel;
  */
 public class EventNotification extends javax.swing.JFrame {
 static final String [] _eventModel = {"Description", "Due in"};
-static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventModel, 6);
+static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(0, 0);
     /**
      * Creates new form EventNotification
      */
     public EventNotification() {
+        _upcomingEventsModel.setColumnIdentifiers(_eventModel);
+        tblEventNotify.setModel(_upcomingEventsModel);
         initComponents();
     }
 
@@ -34,7 +36,7 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
         lblEventName = new javax.swing.JLabel();
         lblEventTime = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable(){
+        tblEventNotify = new javax.swing.JTable(){
             public boolean isCellEditable(int row, int column){
                 return false;
             };
@@ -49,8 +51,8 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
 
         lblEventTime.setText("jLabel1");
 
-        jTable1.setModel(_upcomingEventsModel);
-        jScrollPane1.setViewportView(jTable1);
+        tblEventNotify.setModel(_upcomingEventsModel);
+        jScrollPane1.setViewportView(tblEventNotify);
 
         jButton1.setText("Dismiss");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -147,8 +149,8 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTable jTable1;
     private javax.swing.JLabel lblEventName;
     private javax.swing.JLabel lblEventTime;
+    private static javax.swing.JTable tblEventNotify;
     // End of variables declaration//GEN-END:variables
 }
