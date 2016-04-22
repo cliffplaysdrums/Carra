@@ -13,12 +13,15 @@ import javax.swing.table.DefaultTableModel;
  */
 public class EventNotification extends javax.swing.JFrame {
 static final String [] _eventModel = {"Description", "Due in"};
-static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventModel, 6);
+static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(0, 0);
     /**
      * Creates new form EventNotification
      */
     public EventNotification() {
         initComponents();
+        _upcomingEventsModel.setColumnIdentifiers(_eventModel);
+        tblEventNotify.setModel(_upcomingEventsModel);
+        prompt();
     }
 
     /**
@@ -31,65 +34,35 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        lblEventName = new javax.swing.JLabel();
-        lblEventTime = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable(){
+        tblEventNotify = new javax.swing.JTable(){
             public boolean isCellEditable(int row, int column){
                 return false;
             };
         };
-        jButton1 = new javax.swing.JButton();
+        btnDismiss = new javax.swing.JButton();
+        btnSnooze = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setName("Event Reminder"); // NOI18N
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        lblEventName.setText("jLabel1");
+        tblEventNotify.setModel(_upcomingEventsModel);
+        jScrollPane1.setViewportView(tblEventNotify);
 
-        lblEventTime.setText("jLabel1");
+        jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jTable1.setModel(_upcomingEventsModel);
-        jScrollPane1.setViewportView(jTable1);
-
-        jButton1.setText("Dismiss");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnDismiss.setText("Dismiss");
+        btnDismiss.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnDismissActionPerformed(evt);
             }
         });
+        jPanel1.add(btnDismiss, java.awt.BorderLayout.PAGE_START);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblEventName, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
-                            .addComponent(lblEventTime, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblEventName, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(lblEventTime, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addGap(82, 82, 82))
-        );
+        btnSnooze.setText("Snooze");
+        jPanel1.add(btnSnooze, java.awt.BorderLayout.PAGE_END);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -99,16 +72,24 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 274, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    
+    public static void prompt(){
+        _upcomingEventsModel.setRowCount(0);
+        for(String s : GUI._dueEvent.keySet()){
+            System.out.println(" "+s);
+            _upcomingEventsModel.addRow(new Object[]{s, GUI._dueEvent.get(s)});
+        }
+    }
+    private void btnDismissActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDismissActionPerformed
         // TODO add your handling code here:
         this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnDismissActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,11 +125,10 @@ static DefaultTableModel _upcomingEventsModel = new DefaultTableModel(_eventMode
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    public static javax.swing.JButton btnDismiss;
+    public static javax.swing.JButton btnSnooze;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private static javax.swing.JTable jTable1;
-    private javax.swing.JLabel lblEventName;
-    private javax.swing.JLabel lblEventTime;
+    private static javax.swing.JTable tblEventNotify;
     // End of variables declaration//GEN-END:variables
 }

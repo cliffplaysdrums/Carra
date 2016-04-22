@@ -222,6 +222,8 @@ public class AddUsers extends javax.swing.JFrame {
                     try {
                         dbModel.insertUser(username, password, email, _userDepartment, newUser.isAdmin());
                         dbModel.addUserDept(username, _userDepartment);
+                        GUI._userInfo.put(newUser, new ArrayList<>());
+                        Serialize.saveUserFiles(Serialize._fileLocation);
                     } catch (SQLException | ClassNotFoundException ex) {
                         Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -230,20 +232,16 @@ public class AddUsers extends javax.swing.JFrame {
                         departmentUsers = new ArrayList<>();
                     }
                     departmentUsers.add(newUser);
-                    GUI._allDepts.put(_userDepartment, departmentUsers);                    
-                    GUI._userInfo.put(newUser, new ArrayList<>());
-                    Serialize.saveUserFiles(Serialize._fileLocation);
+                    GUI._allDepts.put(_userDepartment, departmentUsers);
                     JOptionPane.showMessageDialog(null, newUser.getUsername() + " User " + " Added");
                     repaint();
                     clearText();
+                } else if (dbModel.findUser(username) == true) {
+                    JOptionPane.showMessageDialog(null, "This Username (" + username + ") already exist in the database", "Username Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    if (dbModel.findUser(username) == true) {
-                        JOptionPane.showMessageDialog(null, "This Username (" + username + ") already exist in the database", "Username Error", JOptionPane.ERROR_MESSAGE);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);
-                    }
+                    JOptionPane.showMessageDialog(null, "No Department Selected", "All users must belong to a department", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(AddUsers.class.getName()).log(Level.SEVERE, null, ex);
                 //TODO add error message here
